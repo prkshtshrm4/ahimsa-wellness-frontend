@@ -28,9 +28,9 @@ export default function InvoiceView() {
   const issued = new Date(invoice.issuedAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' });
 
   return (
-    <div style={{ maxWidth: 720, margin: '0 auto', padding: '34px 30px 80px' }} className="ah-fade">
+    <div className="ah-page ah-fade" style={{ maxWidth: 720 }}>
       {toast && <Toast onClose={() => setToast(null)}>{toast}</Toast>}
-      <div style={{ display: 'flex', justifyContent: 'space-between', gap: 10, marginBottom: 16 }}>
+      <div className="ah-invoice-actions" style={{ display: 'flex', justifyContent: 'space-between', gap: 10, marginBottom: 16, flexWrap: 'wrap' }}>
         <button onClick={() => navigate('/dashboard')} style={{ ...s.btnGhost, fontSize: 13 }}>← Back</button>
         <div style={{ display: 'flex', gap: 10 }}>
           <button onClick={email} style={{ ...s.btnGhost, fontSize: 13 }}>Email a copy</button>

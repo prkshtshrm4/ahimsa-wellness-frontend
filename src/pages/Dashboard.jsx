@@ -38,7 +38,7 @@ export default function Dashboard() {
   if (!upcoming || !past) return <Spinner center />;
 
   return (
-    <div style={s.page} className="ah-fade">
+    <div className="ah-page ah-fade">
       {toast && <Toast tone={toast.tone} onClose={() => setToast(null)}>{toast.msg}</Toast>}
       {reschedule && (
         <RescheduleModal
@@ -70,7 +70,7 @@ export default function Dashboard() {
             const canManage = new Date() < new Date(b.cancellableUntil);
             const pending = b.status === 'pendingPayment';
             return (
-              <div key={b._id} style={{ ...s.cardBox, display: 'flex', alignItems: 'center', gap: 20, flexWrap: 'wrap' }}>
+              <div key={b._id} className="ah-dashboard-card" style={{ ...s.cardBox, display: 'flex', alignItems: 'center', gap: 20, flexWrap: 'wrap' }}>
                 <div style={{ flex: 1, minWidth: 220 }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 6 }}>
                     <div style={{ fontFamily: font.serif, fontSize: 19 }}>{b.serviceName}</div>
@@ -82,7 +82,7 @@ export default function Dashboard() {
                     {pending ? 'Complete payment to secure this slot' : canManage ? `Free cancellation until ${whenLabel(b.cancellableUntil)}` : 'Cancellation window closed'}
                   </div>
                 </div>
-                <div style={{ display: 'flex', gap: 8, flexShrink: 0 }}>
+                <div className="ah-dashboard-actions" style={{ display: 'flex', gap: 8, flexShrink: 0 }}>
                   <button onClick={() => setReschedule(b)} disabled={!canManage} style={{ ...s.btnGhost, padding: '9px 15px', fontSize: 13, opacity: canManage ? 1 : 0.4, cursor: canManage ? 'pointer' : 'not-allowed' }}>Reschedule</button>
                   <button onClick={() => cancel(b)} disabled={!canManage} style={{ padding: '9px 15px', borderRadius: 9, border: `1px solid ${c.dangerBorder}`, background: '#fff', fontSize: 13, fontWeight: 600, color: c.dangerText, cursor: canManage ? 'pointer' : 'not-allowed', opacity: canManage ? 1 : 0.4 }}>Cancel</button>
                 </div>

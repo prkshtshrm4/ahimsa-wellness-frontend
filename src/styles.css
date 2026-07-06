@@ -264,6 +264,507 @@ a {
     border-left: none;
     border-top: 1px solid #e2dbcc;
   }
+  .ah-hero-section {
+    padding: 36px 16px 28px;
+  }
+  #services {
+    padding-left: 16px !important;
+    padding-right: 16px !important;
+  }
+}
+
+/* ─── Shared page shell ──────────────────────────────────────────────────── */
+.ah-page {
+  max-width: 1120px;
+  margin: 0 auto;
+  padding: 34px 30px 80px;
+  width: 100%;
+}
+
+.ah-auth-page {
+  min-height: calc(100vh - 66px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+/* ─── Public header (mobile) ─────────────────────────────────────────────── */
+.ah-public-header {
+  height: 66px;
+  flex-shrink: 0;
+  border-bottom: 1px solid #ece6da;
+  background: rgba(253, 251, 247, 0.92);
+  backdrop-filter: blur(8px);
+  position: sticky;
+  top: 0;
+  z-index: 30;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 32px;
+  gap: 12px;
+}
+
+.ah-nav-desktop {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.ah-nav-mobile-actions {
+  display: none;
+  align-items: center;
+  gap: 8px;
+}
+
+.ah-menu-btn {
+  width: 40px;
+  height: 40px;
+  border-radius: 9px;
+  border: 1px solid #e2dbcc;
+  background: #fff;
+  font-size: 18px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #1b3c35;
+}
+
+.ah-mobile-drawer-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(26, 31, 43, 0.35);
+  z-index: 40;
+  animation: ahOverlay 0.2s ease both;
+}
+
+.ah-mobile-drawer {
+  position: fixed;
+  top: 0;
+  right: 0;
+  width: min(300px, 88vw);
+  height: 100%;
+  background: #fdfbf7;
+  border-left: 1px solid #ece6da;
+  z-index: 50;
+  padding: 20px 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  animation: ahRise 0.25s ease both;
+}
+
+.ah-drawer-link {
+  display: block;
+  padding: 14px 12px;
+  border-radius: 10px;
+  font-size: 15px;
+  font-weight: 600;
+  color: #5b615e;
+  text-decoration: none;
+}
+
+.ah-drawer-link.active {
+  background: #edf3ee;
+  color: #1b3c35;
+}
+
+.ah-drawer-cta {
+  margin-top: 8px;
+  padding: 14px 16px;
+  border-radius: 10px;
+  border: none;
+  background: #1b3c35;
+  color: #fdfbf7;
+  font-weight: 600;
+  font-size: 15px;
+  cursor: pointer;
+  width: 100%;
+}
+
+/* ─── Patient app shell (logged-in, mobile) ──────────────────────────────── */
+.ah-app-shell {
+  min-height: 100vh;
+  display: flex;
+  background: #fdfbf7;
+}
+
+.ah-app-sidebar {
+  width: 264px;
+  flex-shrink: 0;
+  background: #fff;
+  border-right: 1px solid #ece6da;
+  display: flex;
+  flex-direction: column;
+  position: sticky;
+  top: 0;
+  height: 100vh;
+}
+
+.ah-app-main {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.ah-app-topbar {
+  height: 60px;
+  flex-shrink: 0;
+  border-bottom: 1px solid #ece6da;
+  background: rgba(253, 251, 247, 0.86);
+  backdrop-filter: blur(8px);
+  position: sticky;
+  top: 0;
+  z-index: 5;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 30px;
+  gap: 12px;
+}
+
+.ah-app-topbar-meta {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.ah-app-topbar-domain {
+  font-size: 12px;
+  color: #8c9490;
+}
+
+.ah-patient-mobile-header {
+  display: none;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  border-bottom: 1px solid #ece6da;
+  background: #fff;
+  position: sticky;
+  top: 0;
+  z-index: 6;
+}
+
+.ah-patient-bottom-nav {
+  display: none;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 25;
+  background: rgba(255, 255, 255, 0.96);
+  border-top: 1px solid #ece6da;
+  padding: 8px 12px calc(8px + env(safe-area-inset-bottom));
+  backdrop-filter: blur(8px);
+}
+
+.ah-patient-bottom-nav-inner {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 6px;
+  max-width: 480px;
+  margin: 0 auto;
+}
+
+.ah-patient-tab {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  padding: 8px 6px;
+  border-radius: 10px;
+  font-size: 11px;
+  font-weight: 600;
+  color: #8c9490;
+  text-decoration: none;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+}
+
+.ah-patient-tab.active {
+  color: #1b3c35;
+  background: #edf3ee;
+}
+
+.ah-patient-tab-icon {
+  font-size: 16px;
+  line-height: 1;
+}
+
+/* ─── Booking flow (mobile) ──────────────────────────────────────────────── */
+.ah-booking-page {
+  max-width: 1120px;
+  margin: 0 auto;
+  padding: 34px 30px 80px;
+}
+
+.ah-booking-header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-bottom: 22px;
+}
+
+.ah-booking-steps {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  max-width: 100%;
+}
+
+.ah-booking-layout {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 24px;
+  align-items: start;
+}
+
+.ah-booking-layout.has-summary {
+  grid-template-columns: minmax(0, 1fr) 300px;
+}
+
+.ah-booking-summary {
+  background: #1b3c35;
+  color: #eaf1ec;
+  border-radius: 14px;
+  padding: 22px;
+  position: sticky;
+  top: 78px;
+}
+
+.ah-summary-compact {
+  display: none;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.ah-summary-compact-label {
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  color: #7fa88f;
+  font-weight: 700;
+  margin-bottom: 2px;
+}
+
+.ah-summary-compact-name {
+  font-family: 'Newsreader', Georgia, serif;
+  font-size: 17px;
+  color: #fdfbf7;
+  line-height: 1.2;
+}
+
+.ah-summary-compact-price {
+  font-family: 'Newsreader', Georgia, serif;
+  font-size: 22px;
+  color: #b89355;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.ah-summary-extended {
+  display: block;
+}
+
+.ah-service-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(232px, 1fr));
+  gap: 12px;
+}
+
+.ah-slot-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 10px;
+}
+
+.ah-form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px 16px;
+}
+
+.ah-booking-actions {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 20px;
+  gap: 12px;
+}
+
+.ah-booking-actions .ah-btn-continue {
+  flex: 1;
+  max-width: 220px;
+  margin-left: auto;
+}
+
+.ah-day-picker {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 22px;
+}
+
+@media (max-width: 768px) {
+  .ah-public-header {
+    padding: 0 14px;
+  }
+
+  .ah-nav-desktop {
+    display: none;
+  }
+
+  .ah-nav-mobile-actions {
+    display: flex;
+  }
+
+  .ah-logo-word-sub {
+    display: none;
+  }
+
+  .ah-page,
+  .ah-booking-page {
+    padding: 18px 16px 96px;
+  }
+
+  .ah-auth-page {
+    padding: 16px;
+    align-items: flex-start;
+    padding-top: 28px;
+  }
+
+  .ah-booking-header {
+    flex-direction: column;
+    align-items: stretch;
+    margin-bottom: 16px;
+  }
+
+  .ah-booking-steps {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    padding-bottom: 4px;
+    scrollbar-width: none;
+  }
+
+  .ah-booking-steps::-webkit-scrollbar {
+    display: none;
+  }
+
+  .ah-booking-steps > * {
+    flex-shrink: 0;
+  }
+
+  .ah-booking-layout.has-summary {
+    grid-template-columns: 1fr;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .ah-booking-summary {
+    position: static;
+    order: -1;
+    padding: 14px 16px;
+    top: auto;
+  }
+
+  .ah-summary-compact {
+    display: flex;
+  }
+
+  .ah-summary-extended {
+    display: none;
+  }
+
+  .ah-service-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .ah-slot-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .ah-form-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .ah-day-picker {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    padding-bottom: 4px;
+  }
+
+  .ah-day-picker > * {
+    flex-shrink: 0;
+  }
+
+  .ah-booking-actions {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    margin: 0;
+    padding: 12px 16px calc(12px + env(safe-area-inset-bottom));
+    background: rgba(253, 251, 247, 0.96);
+    border-top: 1px solid #ece6da;
+    backdrop-filter: blur(8px);
+    z-index: 20;
+  }
+
+  .ah-booking-actions .ah-btn-continue {
+    max-width: none;
+  }
+
+  /* Patient logged-in: bottom tab bar instead of sidebar */
+  .ah-app-shell--patient .ah-app-sidebar {
+    display: none;
+  }
+
+  .ah-app-shell--patient .ah-patient-mobile-header {
+    display: flex;
+  }
+
+  .ah-app-shell--patient .ah-app-topbar {
+    display: none;
+  }
+
+  .ah-app-shell--patient .ah-patient-bottom-nav {
+    display: block;
+  }
+
+  .ah-app-shell--patient .ah-app-content {
+    padding-bottom: calc(72px + env(safe-area-inset-bottom));
+  }
+
+  .ah-dashboard-card {
+    flex-direction: column;
+    align-items: stretch !important;
+  }
+
+  .ah-dashboard-actions {
+    width: 100%;
+  }
+
+  .ah-dashboard-actions button {
+    flex: 1;
+  }
+
+  .ah-invoice-actions {
+    flex-direction: column;
+    align-items: stretch !important;
+  }
+
+  .ah-invoice-actions button {
+    width: 100%;
+  }
 }
 
 .ah-spinner {

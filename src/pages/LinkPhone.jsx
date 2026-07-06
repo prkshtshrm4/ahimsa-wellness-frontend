@@ -65,7 +65,7 @@ export default function LinkPhone() {
   }
 
   return (
-    <div style={{ minHeight: 'calc(100vh - 66px)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 20 }}>
+    <div className="ah-auth-page">
       {toast && <Toast tone="error" onClose={() => setToast(null)}>{toast}</Toast>}
       <div className="ah-rise" style={{ ...s.cardBox, maxWidth: 420, width: '100%', padding: 34 }}>
         <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 16 }}>

@@ -152,23 +152,23 @@ export default function Booking() {
   const showSummary = step >= 1 && step <= 3 && service;
 
   return (
-    <div style={{ maxWidth: 1120, margin: '0 auto', padding: '34px 30px 80px' }} className="ah-fade">
+    <div className="ah-fade ah-booking-page">
       {toast && <Toast tone={toast.tone} onClose={() => setToast(null)}>{toast.msg}</Toast>}
 
       {isPatient && step < 4 && (
         <div style={{ marginBottom: 16, fontSize: 13, color: c.greenText, background: c.greenSoft, border: `1px solid ${c.greenBorder}`, borderRadius: 10, padding: '10px 14px', display: 'flex', alignItems: 'center', gap: 8 }}>
           <span>✓</span>
-          Signed in as {patient?.name} — this booking will be saved to your account.
+          Signed in as {patient?.name}
         </div>
       )}
 
-      <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', flexWrap: 'wrap', gap: 16, marginBottom: 22 }}>
+      <div className="ah-booking-header">
         <div>
           <div style={{ ...s.eyebrow, marginBottom: 6 }}>BOOK A SESSION</div>
           <h1 style={s.h1}>{heading}</h1>
         </div>
         {step < 4 && (
-          <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
+          <div className="ah-booking-steps">
             {STEP_LABELS.map((label, i) => (
               <div
                 key={label}
@@ -191,7 +191,7 @@ export default function Booking() {
         )}
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: showSummary ? 'minmax(0,1fr) 300px' : '1fr', gap: 24, alignItems: 'start' }}>
+      <div className={`ah-booking-layout${showSummary ? ' has-summary' : ''}`}>
         <div style={{ minWidth: 0 }}>
           {step === 0 && (
             <ServiceStep
@@ -242,13 +242,15 @@ export default function Booking() {
           )}
 
           {step < 3 && (
-            <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 20 }}>
+            <div className="ah-booking-actions">
               {step > 0 ? (
-                <button onClick={() => setStep(step - 1)} style={s.btnGhost}>← Back</button>
+                <button type="button" onClick={() => setStep(step - 1)} style={s.btnGhost}>← Back</button>
               ) : (
                 <div />
               )}
               <button
+                type="button"
+                className="ah-btn-continue"
                 onClick={() => canNext && setStep(step + 1)}
                 disabled={!canNext}
                 style={{ ...s.btnPrimary, opacity: canNext ? 1 : 0.45, cursor: canNext ? 'pointer' : 'not-allowed', padding: '12px 26px' }}
@@ -278,7 +280,7 @@ function ServiceStep({ grouped, serviceId, onPick }) {
       {grouped.map((grp) => (
         <div key={grp.cat} style={{ marginBottom: 22 }}>
           <div style={{ fontSize: 11, letterSpacing: '.14em', fontWeight: 700, color: '#9AA29C', marginBottom: 10 }}>{grp.cat}</div>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(232px,1fr))', gap: 12 }}>
+          <div className="ah-service-grid">
             {grp.items.map((svc) => {
               const active = svc._id === serviceId;
               return (
@@ -336,7 +338,7 @@ function TimeStep({ service, days, date, setDate, slots, startTime, setStartTime
       <div style={{ fontSize: 12, color: c.muted, marginBottom: 14 }}>
         {service?.name} · {service?.durationMin} min · with {service?.therapistName}
       </div>
-      <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginBottom: 22 }}>
+      <div className="ah-day-picker">
         {days.map((d) => {
           const active = d.id === date;
           return (
@@ -372,7 +374,7 @@ function TimeStep({ service, days, date, setDate, slots, startTime, setStartTime
       ) : slots.length === 0 ? (
         <div style={{ fontSize: 13.5, color: c.muted, padding: '20px 0' }}>The centre is closed / nothing configured for this day.</div>
       ) : (
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(150px,1fr))', gap: 10 }}>
+        <div className="ah-slot-grid">
           {slots.map((sl) => {
             const full = sl.remaining <= 0;
             const low = sl.remaining === 1;
@@ -431,7 +433,7 @@ function DetailsStep({ form, setForm, isPatient, busy, phoneLookup, onGoogle, on
       <div style={s.cardBox}>
         <div style={{ fontFamily: font.serif, fontSize: 18, marginBottom: 2 }}>Your details</div>
         <div style={{ fontSize: 12, color: c.muted, marginBottom: 18 }}>So our therapist can prepare for your visit. Nothing here is shared.</div>
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '14px 16px' }}>
+        <div className="ah-form-grid">
           <label style={{ ...s.label, gridColumn: '1 / -1' }}>Full name
             <input value={form.name} onChange={set('name')} placeholder="e.g. Rajesh Malhotra" style={s.input} />
           </label>
@@ -527,7 +529,7 @@ function ReviewStep({ service, date, startTime, form, payMode, setPayMode, busy,
 function Confirmed({ done, service, date, startTime, isPatient, onDashboard, onAnother }) {
   const paid = done.paid;
   return (
-    <div className="ah-rise" style={{ background: '#fff', border: '1px solid #E6EDE4', borderRadius: 16, padding: '40px 30px', textAlign: 'center', position: 'relative', overflow: 'hidden' }}>
+    <div className="ah-rise" style={{ background: '#fff', border: '1px solid #E6EDE4', borderRadius: 16, padding: 'clamp(24px, 5vw, 40px) clamp(16px, 4vw, 30px)', textAlign: 'center', position: 'relative', overflow: 'hidden' }}>
       <div style={{ position: 'absolute', inset: 0, background: 'radial-gradient(120% 80% at 50% -10%, #F1F6F1 0%, rgba(241,246,241,0) 60%)' }} />
       <div style={{ position: 'relative' }}>
         <div style={{ margin: '0 auto 20px', width: 88, display: 'flex', justifyContent: 'center' }}>
@@ -542,7 +544,7 @@ function Confirmed({ done, service, date, startTime, isPatient, onDashboard, onA
             ? 'We look forward to caring for you. A confirmation and invoice are in your account.'
             : 'Your slot is held. Please settle payment at the front desk when you arrive.'}
         </div>
-        <div style={{ display: 'inline-block', textAlign: 'left', background: c.cardTint, border: `1px solid ${c.border}`, borderRadius: 12, padding: '18px 22px', minWidth: 300 }}>
+        <div style={{ display: 'inline-block', textAlign: 'left', background: c.cardTint, border: `1px solid ${c.border}`, borderRadius: 12, padding: '18px 22px', width: '100%', maxWidth: 360 }}>
           <MiniRow label="Service" value={service?.name} first />
           <MiniRow label="When" value={slotLabel(date, startTime)} />
           <MiniRow label="Therapist" value={service?.therapistName} />
@@ -562,20 +564,32 @@ function Confirmed({ done, service, date, startTime, isPatient, onDashboard, onA
 /* ─── Sticky summary sidebar ───────────────────────────────────────────── */
 function SummaryCard({ service, date, startTime }) {
   return (
-    <aside style={{ background: c.teal, color: '#EAF1EC', borderRadius: 14, padding: 22, position: 'sticky', top: 20 }}>
-      <div style={{ fontSize: 11, letterSpacing: '.14em', color: c.sage, fontWeight: 700, marginBottom: 14 }}>YOUR SESSION</div>
-      <div style={{ fontFamily: font.serif, fontSize: 22, color: c.ivory, lineHeight: 1.2 }}>{service?.name}</div>
-      <div style={{ fontSize: 12.5, color: '#A9C4B7', marginTop: 6 }}>{service?.blurb}</div>
-      <div style={{ height: 1, background: 'rgba(255,255,255,.12)', margin: '18px 0' }} />
-      <SumRow label="Duration" value={`${service?.durationMin} min`} />
-      <SumRow label="Therapist" value={service?.therapistName} />
-      <SumRow label="Slot" value={startTime ? slotLabel(date, startTime) : '—'} />
-      <div style={{ height: 1, background: 'rgba(255,255,255,.12)', margin: '18px 0' }} />
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
-        <span style={{ fontSize: 13, color: '#A9C4B7' }}>Total</span>
-        <span style={{ fontFamily: font.serif, fontSize: 26, color: c.gold }}>₹{rupees(service?.priceInPaise)}</span>
+    <aside className="ah-booking-summary">
+      <div className="ah-summary-compact">
+        <div>
+          <div className="ah-summary-compact-label">YOUR SESSION</div>
+          <div className="ah-summary-compact-name">{service?.name}</div>
+          {startTime && (
+            <div style={{ fontSize: 11, color: '#A9C4B7', marginTop: 4 }}>{slotLabel(date, startTime)}</div>
+          )}
+        </div>
+        <div className="ah-summary-compact-price">₹{rupees(service?.priceInPaise)}</div>
       </div>
-      <div style={{ fontSize: 11, color: c.sage, marginTop: 14, lineHeight: 1.5 }}>Free cancellation up to 12 hours before your session.</div>
+      <div className="ah-summary-extended">
+        <div style={{ fontSize: 11, letterSpacing: '.14em', color: c.sage, fontWeight: 700, marginBottom: 14 }}>YOUR SESSION</div>
+        <div style={{ fontFamily: font.serif, fontSize: 22, color: c.ivory, lineHeight: 1.2 }}>{service?.name}</div>
+        <div style={{ fontSize: 12.5, color: '#A9C4B7', marginTop: 6 }}>{service?.blurb}</div>
+        <div style={{ height: 1, background: 'rgba(255,255,255,.12)', margin: '18px 0' }} />
+        <SumRow label="Duration" value={`${service?.durationMin} min`} />
+        <SumRow label="Therapist" value={service?.therapistName} />
+        <SumRow label="Slot" value={startTime ? slotLabel(date, startTime) : '—'} />
+        <div style={{ height: 1, background: 'rgba(255,255,255,.12)', margin: '18px 0' }} />
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
+          <span style={{ fontSize: 13, color: '#A9C4B7' }}>Total</span>
+          <span style={{ fontFamily: font.serif, fontSize: 26, color: c.gold }}>₹{rupees(service?.priceInPaise)}</span>
+        </div>
+        <div style={{ fontSize: 11, color: c.sage, marginTop: 14, lineHeight: 1.5 }}>Free cancellation up to 12 hours before your session.</div>
+      </div>
     </aside>
   );
 }

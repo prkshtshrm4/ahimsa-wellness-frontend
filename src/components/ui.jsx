@@ -26,7 +26,7 @@ export function Logo({ size = 44, showWord = false, sub }) {
       {showWord && (
         <div style={{ lineHeight: 1 }}>
           <div style={{ fontFamily: font.serif, fontWeight: 600, fontSize: 18, letterSpacing: '.06em' }}>AHIMSA</div>
-          <div style={{ fontSize: 9.5, letterSpacing: '.22em', color: c.sage, fontWeight: 600, marginTop: 3 }}>
+          <div className="ah-logo-word-sub" style={{ fontSize: 9.5, letterSpacing: '.22em', color: c.sage, fontWeight: 600, marginTop: 3 }}>
             {sub || 'WELLNESS • GURUGRAM'}
           </div>
         </div>
