@@ -105,10 +105,11 @@ export function PublicLayout() {
   const location = useLocation();
   const bookingsTo = isPatient ? '/dashboard' : '/login';
   const [menuOpen, setMenuOpen] = useState(false);
+  const onBookPage = /^\/book/.test(location.pathname);
 
   return (
     <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', background: c.ivory }}>
-      <header className="ah-public-header">
+      <header className={`ah-public-header${onBookPage ? ' ah-public-header--booking' : ''}`}>
         <Link to="/" style={{ textDecoration: 'none', color: 'inherit', minWidth: 0 }}>
           <Logo size={38} showWord />
         </Link>
@@ -140,23 +141,25 @@ export function PublicLayout() {
               My bookings
             </NavLink>
           )}
-          <button
-            type="button"
-            onClick={() => navigate('/book')}
-            style={{
-              marginLeft: 8,
-              padding: '10px 18px',
-              borderRadius: 9,
-              border: 'none',
-              background: c.teal,
-              color: c.ivory,
-              fontWeight: 600,
-              fontSize: 13.5,
-              cursor: 'pointer',
-            }}
-          >
-            Book a session
-          </button>
+          {!onBookPage && (
+            <button
+              type="button"
+              onClick={() => navigate('/book')}
+              style={{
+                marginLeft: 8,
+                padding: '10px 18px',
+                borderRadius: 9,
+                border: 'none',
+                background: c.teal,
+                color: c.ivory,
+                fontWeight: 600,
+                fontSize: 13.5,
+                cursor: 'pointer',
+              }}
+            >
+              Book a session
+            </button>
+          )}
           {!isStaff && (
             <div
               onClick={() => navigate('/staff/login')}
@@ -168,23 +171,25 @@ export function PublicLayout() {
         </div>
 
         <div className="ah-nav-mobile-actions">
-          <button
-            type="button"
-            onClick={() => navigate('/book')}
-            style={{
-              padding: '9px 14px',
-              borderRadius: 9,
-              border: 'none',
-              background: c.teal,
-              color: c.ivory,
-              fontWeight: 600,
-              fontSize: 13,
-              cursor: 'pointer',
-              whiteSpace: 'nowrap',
-            }}
-          >
-            Book
-          </button>
+          {!onBookPage && (
+            <button
+              type="button"
+              onClick={() => navigate('/book')}
+              style={{
+                padding: '9px 14px',
+                borderRadius: 9,
+                border: 'none',
+                background: c.teal,
+                color: c.ivory,
+                fontWeight: 600,
+                fontSize: 13,
+                cursor: 'pointer',
+                whiteSpace: 'nowrap',
+              }}
+            >
+              Book
+            </button>
+          )}
           <button type="button" className="ah-menu-btn" onClick={() => setMenuOpen(true)} aria-label="Open menu">
             ☰
           </button>
@@ -199,11 +204,11 @@ export function PublicLayout() {
         bookingsTo={bookingsTo}
       />
 
-      <main style={{ flex: 1, paddingBottom: isPatient && !isStaff ? 'calc(72px + env(safe-area-inset-bottom))' : 0 }}>
+      <main style={{ flex: 1, paddingBottom: isPatient && !isStaff && !onBookPage ? 'calc(72px + env(safe-area-inset-bottom))' : 0 }}>
         <Outlet />
       </main>
 
-      {isPatient && !isStaff && <PatientBottomNav />}
+      {isPatient && !isStaff && !onBookPage && <PatientBottomNav />}
     </div>
   );
 }

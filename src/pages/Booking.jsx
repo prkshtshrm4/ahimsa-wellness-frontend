@@ -12,6 +12,38 @@ import { toLocalDigits, toE164, isValidIndianMobile } from '../utils/phone.js';
 
 const STEP_LABELS = ['Therapy', 'Time', 'Details', 'Review & pay'];
 
+function BookingProgress({ step, onStepClick }) {
+  return (
+    <div className="ah-booking-progress">
+      <div className="ah-progress-segments" aria-hidden="true">
+        {STEP_LABELS.map((_, i) => (
+          <div
+            key={i}
+            className={`ah-progress-seg${i < step ? ' done' : ''}${i === step ? ' active' : ''}`}
+          />
+        ))}
+      </div>
+      <p className="ah-progress-caption">
+        Step {step + 1} of {STEP_LABELS.length} · <span>{STEP_LABELS[step]}</span>
+      </p>
+      <div className="ah-booking-steps ah-booking-steps--desktop">
+        {STEP_LABELS.map((label, i) => (
+          <button
+            key={label}
+            type="button"
+            onClick={() => i < step && onStepClick(i)}
+            disabled={i > step}
+            className={`ah-step-pill${i === step ? ' active' : ''}${i < step ? ' done' : ''}`}
+          >
+            <span className="ah-step-num">{i + 1}</span>
+            {label}
+          </button>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 export default function Booking() {
   const navigate = useNavigate();
   const [params] = useSearchParams();
@@ -152,43 +184,22 @@ export default function Booking() {
   const showSummary = step >= 1 && step <= 3 && service;
 
   return (
-    <div className="ah-fade ah-booking-page">
+    <div className="ah-fade ah-booking-page ah-booking-flow">
       {toast && <Toast tone={toast.tone} onClose={() => setToast(null)}>{toast.msg}</Toast>}
 
       {isPatient && step < 4 && (
-        <div style={{ marginBottom: 16, fontSize: 13, color: c.greenText, background: c.greenSoft, border: `1px solid ${c.greenBorder}`, borderRadius: 10, padding: '10px 14px', display: 'flex', alignItems: 'center', gap: 8 }}>
-          <span>✓</span>
-          Signed in as {patient?.name}
+        <div className="ah-signed-in-chip">
+          <span className="ah-signed-in-dot" />
+          Signed in as {patient?.name?.split(' ')[0]}
         </div>
       )}
 
       <div className="ah-booking-header">
-        <div>
-          <div style={{ ...s.eyebrow, marginBottom: 6 }}>BOOK A SESSION</div>
-          <h1 style={s.h1}>{heading}</h1>
+        <div className="ah-booking-title-block">
+          <div className="ah-booking-eyebrow">Book a session</div>
+          <h1 className="ah-booking-title">{heading}</h1>
         </div>
-        {step < 4 && (
-          <div className="ah-booking-steps">
-            {STEP_LABELS.map((label, i) => (
-              <div
-                key={label}
-                onClick={() => i < step && setStep(i)}
-                style={{
-                  fontSize: 12,
-                  fontWeight: 600,
-                  padding: '7px 12px',
-                  borderRadius: 8,
-                  cursor: i < step ? 'pointer' : 'default',
-                  color: i === step ? c.teal : i < step ? c.greenText : c.mutedWarm,
-                  background: i === step ? c.greenSoft : 'transparent',
-                  border: `1px solid ${i === step ? c.greenBorder : 'transparent'}`,
-                }}
-              >
-                <span style={{ opacity: 0.7 }}>{i + 1}</span> {label}
-              </div>
-            ))}
-          </div>
-        )}
+        {step < 4 && <BookingProgress step={step} onStepClick={setStep} />}
       </div>
 
       <div className={`ah-booking-layout${showSummary ? ' has-summary' : ''}`}>
@@ -244,7 +255,9 @@ export default function Booking() {
           {step < 3 && (
             <div className="ah-booking-actions">
               {step > 0 ? (
-                <button type="button" onClick={() => setStep(step - 1)} style={s.btnGhost}>← Back</button>
+                <button type="button" onClick={() => setStep(step - 1)} className="ah-btn-back">
+                  Back
+                </button>
               ) : (
                 <div />
               )}
@@ -253,16 +266,17 @@ export default function Booking() {
                 className="ah-btn-continue"
                 onClick={() => canNext && setStep(step + 1)}
                 disabled={!canNext}
-                style={{ ...s.btnPrimary, opacity: canNext ? 1 : 0.45, cursor: canNext ? 'pointer' : 'not-allowed', padding: '12px 26px' }}
               >
-                Continue →
+                {step === 2 ? 'Review booking' : 'Continue'}
               </button>
             </div>
           )}
 
           {step === 3 && (
-            <div style={{ marginTop: 20 }}>
-              <button onClick={() => setStep(step - 1)} style={s.btnGhost}>← Back</button>
+            <div className="ah-booking-actions ah-booking-actions--review">
+              <button type="button" onClick={() => setStep(step - 1)} className="ah-btn-back">
+                Back
+              </button>
             </div>
           )}
         </div>
@@ -278,49 +292,28 @@ function ServiceStep({ grouped, serviceId, onPick }) {
   return (
     <div className="ah-fade">
       {grouped.map((grp) => (
-        <div key={grp.cat} style={{ marginBottom: 22 }}>
-          <div style={{ fontSize: 11, letterSpacing: '.14em', fontWeight: 700, color: '#9AA29C', marginBottom: 10 }}>{grp.cat}</div>
+        <div key={grp.cat} className="ah-service-group">
+          <div className="ah-service-cat">{grp.cat}</div>
           <div className="ah-service-grid">
             {grp.items.map((svc) => {
               const active = svc._id === serviceId;
               return (
-                <div
+                <button
                   key={svc._id}
+                  type="button"
                   onClick={() => onPick(svc._id)}
-                  className="ah-card-hover"
-                  style={{
-                    background: active ? c.greenSoft : '#fff',
-                    border: `1px solid ${active ? c.teal : c.border}`,
-                    borderRadius: 12,
-                    padding: 16,
-                    cursor: 'pointer',
-                  }}
+                  className={`ah-service-card${active ? ' active' : ''}`}
                 >
-                  <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 8 }}>
-                    <div style={{ fontFamily: font.serif, fontSize: 17, fontWeight: 500, lineHeight: 1.2 }}>{svc.name}</div>
-                    <div
-                      style={{
-                        width: 20,
-                        height: 20,
-                        borderRadius: '50%',
-                        border: `1.5px solid ${active ? c.teal : c.line}`,
-                        background: active ? c.teal : 'transparent',
-                        color: '#fff',
-                        fontSize: 12,
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                      }}
-                    >
-                      {active ? '✓' : ''}
-                    </div>
+                  <div className="ah-service-card-top">
+                    <div className="ah-service-card-name">{svc.name}</div>
+                    <div className="ah-service-card-check">{active ? '✓' : ''}</div>
                   </div>
-                  <div style={{ fontSize: 12, color: c.muted, margin: '7px 0 14px', lineHeight: 1.4 }}>{svc.blurb}</div>
-                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                    <div style={{ fontSize: 15, fontWeight: 700, color: c.teal }}>₹{rupees(svc.priceInPaise)}</div>
-                    <div style={{ fontSize: 11, color: c.mutedWarm }}>{svc.durationMin} min</div>
+                  <div className="ah-service-card-blurb">{svc.blurb}</div>
+                  <div className="ah-service-card-foot">
+                    <div className="ah-service-card-price">₹{rupees(svc.priceInPaise)}</div>
+                    <div className="ah-service-card-dur">{svc.durationMin} min</div>
                   </div>
-                </div>
+                </button>
               );
             })}
           </div>
@@ -330,49 +323,58 @@ function ServiceStep({ grouped, serviceId, onPick }) {
   );
 }
 
+function to12h(hhmm) {
+  const [h, m] = hhmm.split(':').map(Number);
+  const ampm = h >= 12 ? 'PM' : 'AM';
+  const h12 = h % 12 || 12;
+  return `${h12}:${String(m).padStart(2, '0')} ${ampm}`;
+}
+
+function slotLabel(date, startTime) {
+  if (!startTime) return '—';
+  const d = new Date(`${date}T${startTime}:00`);
+  return d.toLocaleDateString('en-IN', { weekday: 'short', day: 'numeric', month: 'short' }) + ` · ${to12h(startTime)}`;
+}
+
 /* ─── Step 1: time selection ───────────────────────────────────────────── */
 function TimeStep({ service, days, date, setDate, slots, startTime, setStartTime }) {
   return (
-    <div className="ah-fade" style={{ ...s.cardBox }}>
-      <div style={{ fontFamily: font.serif, fontSize: 18, marginBottom: 4 }}>Choose a day</div>
-      <div style={{ fontSize: 12, color: c.muted, marginBottom: 14 }}>
-        {service?.name} · {service?.durationMin} min · with {service?.therapistName}
+    <div className="ah-fade ah-time-panel">
+      <div className="ah-section-head">
+        <h2 className="ah-section-title">Choose a day</h2>
+        <p className="ah-section-sub">
+          {service?.name} · {service?.durationMin} min
+        </p>
       </div>
       <div className="ah-day-picker">
         {days.map((d) => {
           const active = d.id === date;
           return (
-            <div
+            <button
               key={d.id}
+              type="button"
               onClick={() => setDate(d.id)}
-              style={{
-                textAlign: 'center',
-                padding: '8px 12px',
-                borderRadius: 10,
-                cursor: 'pointer',
-                minWidth: 54,
-                background: active ? c.teal : '#fff',
-                color: active ? c.ivory : c.charcoal,
-                border: `1px solid ${active ? c.teal : c.line}`,
-              }}
+              className={`ah-day-chip${active ? ' active' : ''}`}
             >
-              <div style={{ fontSize: 10, letterSpacing: '.08em', opacity: 0.7 }}>{d.dow}</div>
-              <div style={{ fontSize: 16, fontWeight: 600, marginTop: 2 }}>{d.day}</div>
-              <div style={{ fontSize: 10, opacity: 0.7, marginTop: 1 }}>{d.mon}</div>
-            </div>
+              <span className="ah-day-dow">{d.dow}</span>
+              <span className="ah-day-num">{d.day}</span>
+              <span className="ah-day-mon">{d.mon}</span>
+            </button>
           );
         })}
       </div>
 
-      <div style={{ fontFamily: font.serif, fontSize: 16, marginBottom: 4 }}>Available times</div>
-      <div style={{ fontSize: 11.5, color: c.mutedWarm, marginBottom: 14 }}>
-        Only {service?.capacity} {service?.capacityUnit} — availability shown per slot.
+      <div className="ah-section-head" style={{ marginTop: 8 }}>
+        <h2 className="ah-section-title">Available times</h2>
+        <p className="ah-section-sub">
+          {service?.capacity} {service?.capacityUnit} per slot
+        </p>
       </div>
 
       {!slots ? (
         <Spinner center />
       ) : slots.length === 0 ? (
-        <div style={{ fontSize: 13.5, color: c.muted, padding: '20px 0' }}>The centre is closed / nothing configured for this day.</div>
+        <div className="ah-empty-hint">Nothing available this day — try another date.</div>
       ) : (
         <div className="ah-slot-grid">
           {slots.map((sl) => {
@@ -380,30 +382,18 @@ function TimeStep({ service, days, date, setDate, slots, startTime, setStartTime
             const low = sl.remaining === 1;
             const active = startTime === sl.startTime;
             return (
-              <div
+              <button
                 key={sl.startTime}
-                onClick={() => !full && setStartTime(sl.startTime)}
-                style={{
-                  padding: '12px 14px',
-                  borderRadius: 10,
-                  cursor: full ? 'not-allowed' : 'pointer',
-                  background: active ? c.greenSoft : full ? '#F7F4EE' : '#fff',
-                  border: `1px solid ${active ? c.teal : full ? c.border : c.line}`,
-                  opacity: full ? 0.7 : 1,
-                }}
+                type="button"
+                disabled={full}
+                onClick={() => setStartTime(sl.startTime)}
+                className={`ah-slot-chip${active ? ' active' : ''}${full ? ' full' : ''}${low ? ' low' : ''}`}
               >
-                <div style={{ fontSize: 15, fontWeight: 600, color: full ? c.mutedWarm : c.charcoal }}>{sl.startTime}</div>
-                <div
-                  style={{
-                    fontSize: 11,
-                    fontWeight: 600,
-                    marginTop: 3,
-                    color: full ? c.dangerText : low ? c.amberText : c.greenText,
-                  }}
-                >
-                  {full ? 'Fully booked' : `${sl.remaining} of ${service?.capacity} left`}
-                </div>
-              </div>
+                <span className="ah-slot-time">{to12h(sl.startTime)}</span>
+                <span className="ah-slot-meta">
+                  {full ? 'Full' : low ? '1 left' : `${sl.remaining} free`}
+                </span>
+              </button>
             );
           })}
         </div>
@@ -416,65 +406,61 @@ function TimeStep({ service, days, date, setDate, slots, startTime, setStartTime
 function DetailsStep({ form, setForm, isPatient, busy, phoneLookup, onGoogle, onSignIn }) {
   const set = (k) => (e) => setForm((f) => ({ ...f, [k]: e.target.value }));
   return (
-    <div className="ah-fade">
+    <div className="ah-fade ah-details-panel">
       {phoneLookup?.exists && !isPatient && (
-        <div style={{ marginBottom: 12, fontSize: 13, color: c.bodyText, background: '#FFF9EE', border: '1px solid #F0E4C8', borderRadius: 10, padding: '12px 14px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, flexWrap: 'wrap' }}>
+        <div className="ah-welcome-banner">
           <span>
             Welcome back, <strong>{phoneLookup.firstName}</strong>!
             {phoneLookup.hasAccount ? ' Sign in to attach this booking to your account.' : ' We have your details on file from a previous visit.'}
           </span>
           {phoneLookup.hasAccount && (
-            <button type="button" onClick={onSignIn} style={{ ...s.btnGhost, padding: '7px 12px', fontSize: 12.5, whiteSpace: 'nowrap' }}>
+            <button type="button" onClick={onSignIn} className="ah-btn-inline">
               Sign in
             </button>
           )}
         </div>
       )}
-      <div style={s.cardBox}>
-        <div style={{ fontFamily: font.serif, fontSize: 18, marginBottom: 2 }}>Your details</div>
-        <div style={{ fontSize: 12, color: c.muted, marginBottom: 18 }}>So our therapist can prepare for your visit. Nothing here is shared.</div>
+      <div className="ah-form-card">
+        <div className="ah-form-card-title">Your details</div>
+        <div className="ah-form-card-sub">So our therapist can prepare for your visit. Nothing here is shared.</div>
         <div className="ah-form-grid">
-          <label style={{ ...s.label, gridColumn: '1 / -1' }}>Full name
-            <input value={form.name} onChange={set('name')} placeholder="e.g. Rajesh Malhotra" style={s.input} />
+          <label className="ah-field ah-field--full">Full name
+            <input value={form.name} onChange={set('name')} placeholder="e.g. Rajesh Malhotra" className="ah-input" />
           </label>
-          <label style={s.label}>Mobile number
+          <label className="ah-field">Mobile number
             <PhoneInput value={form.phone} onChange={(digits) => setForm((f) => ({ ...f, phone: digits }))} />
             {form.phone && !isValidIndianMobile(form.phone) && (
-              <span style={{ fontSize: 11, color: c.dangerText, marginTop: 4, display: 'block' }}>
-                Enter a valid 10-digit mobile number
-              </span>
+              <span className="ah-field-error">Enter a valid 10-digit mobile number</span>
             )}
           </label>
-          <label style={s.label}>Age
-            <input value={form.age} onChange={set('age')} placeholder="Optional" style={s.input} />
+          <label className="ah-field">Age
+            <input value={form.age} onChange={set('age')} placeholder="Optional" className="ah-input" />
           </label>
-          <label style={{ ...s.label, gridColumn: '1 / -1' }}>
-            Reason for visit / condition <span style={{ color: c.mutedWarm, fontWeight: 400 }}>(optional)</span>
-            <textarea value={form.reason} onChange={set('reason')} rows={2} placeholder="e.g. chronic lower-back stiffness, managing stress…" style={{ ...s.input, resize: 'vertical' }} />
+          <label className="ah-field ah-field--full">
+            Reason for visit / condition <span className="ah-field-opt">(optional)</span>
+            <textarea value={form.reason} onChange={set('reason')} rows={2} placeholder="e.g. chronic lower-back stiffness, managing stress…" className="ah-input ah-textarea" />
           </label>
         </div>
-        <div style={{ marginTop: 16, display: 'flex', alignItems: 'flex-start', gap: 9, fontSize: 12, color: c.muted, background: '#F5F7F2', border: '1px solid #E6EDE4', borderRadius: 9, padding: '11px 13px' }}>
-          <span style={{ color: c.sage, fontSize: 14 }}>◈</span>
+        <div className="ah-intake-note">
+          <span className="ah-intake-icon">◈</span>
           <span>First-time visitors are asked to arrive 10 minutes early for a brief intake with our naturopath. No rush — we build in the time.</span>
         </div>
       </div>
 
       {!isPatient && (
-        <div style={{ marginTop: 12, display: 'flex', alignItems: 'center', gap: 12, background: '#fff', border: `1px solid ${c.border}`, borderRadius: 12, padding: '14px 16px', flexWrap: 'wrap' }}>
-          <div style={{ flex: 1, minWidth: 180 }}>
-            <div style={{ fontSize: 13.5, fontWeight: 600 }}>Save your bookings &amp; invoices</div>
-            <div style={{ fontSize: 12, color: c.muted }}>Optional — sign in to keep everything in one place.</div>
+        <div className="ah-auth-upsell">
+          <div>
+            <div className="ah-auth-upsell-title">Save your bookings &amp; invoices</div>
+            <div className="ah-auth-upsell-sub">Optional — sign in to keep everything in one place.</div>
           </div>
-          <button type="button" onClick={onSignIn} style={{ ...s.btnGhost, padding: '9px 14px', fontSize: 13 }}>
-            Sign in
-          </button>
-          <button type="button" onClick={onGoogle} disabled={busy} style={{ ...s.btnGhost, padding: '9px 14px', fontSize: 13 }}>
-            <span style={{ fontWeight: 700, color: '#4285F4' }}>G</span> &nbsp;Google
+          <button type="button" onClick={onSignIn} className="ah-btn-inline">Sign in</button>
+          <button type="button" onClick={onGoogle} disabled={busy} className="ah-btn-inline">
+            <span className="ah-google-g">G</span> Google
           </button>
         </div>
       )}
       {isPatient && (
-        <div style={{ marginTop: 12, fontSize: 12.5, color: c.greenText, display: 'flex', alignItems: 'center', gap: 8 }}>
+        <div className="ah-prefill-note">
           <span>✓</span> Your account details are pre-filled below.
         </div>
       )}
@@ -489,36 +475,36 @@ function ReviewStep({ service, date, startTime, form, payMode, setPayMode, busy,
     { id: 'atVisit', label: 'Pay when you arrive', sub: 'Reserve now, settle at the front desk on the day.' },
   ];
   return (
-    <div className="ah-fade" style={s.cardBox}>
-      <div style={{ fontFamily: font.serif, fontSize: 18, marginBottom: 14 }}>Review &amp; pay</div>
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 9, marginBottom: 20 }}>
+    <div className="ah-fade ah-review-panel">
+      <div className="ah-review-rows">
         <Row label="Therapy" value={service?.name} />
         <Row label="When" value={slotLabel(date, startTime)} />
         <Row label="Name" value={form.name} />
       </div>
-      <div style={{ fontSize: 12, fontWeight: 600, color: '#59615f', marginBottom: 9 }}>How would you like to pay?</div>
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 9 }}>
+      <div className="ah-pay-label">How would you like to pay?</div>
+      <div className="ah-pay-options">
         {methods.map((m) => {
           const active = payMode === m.id;
           return (
-            <div
+            <button
               key={m.id}
+              type="button"
               onClick={() => setPayMode(m.id)}
-              style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '12px 14px', borderRadius: 10, cursor: 'pointer', background: active ? c.greenSoft : '#fff', border: `1px solid ${active ? c.teal : c.line}` }}
+              className={`ah-pay-option${active ? ' active' : ''}`}
             >
-              <div style={{ width: 18, height: 18, borderRadius: '50%', border: `2px solid ${active ? c.teal : c.line}`, background: active ? c.teal : 'transparent', boxShadow: active ? 'inset 0 0 0 3px #fff' : 'none' }} />
-              <div style={{ flex: 1, minWidth: 0 }}>
-                <div style={{ fontSize: 14, fontWeight: 600 }}>{m.label}</div>
-                <div style={{ fontSize: 11.5, color: c.muted }}>{m.sub}</div>
-              </div>
-            </div>
+              <span className="ah-pay-radio" />
+              <span className="ah-pay-copy">
+                <span className="ah-pay-title">{m.label}</span>
+                <span className="ah-pay-sub">{m.sub}</span>
+              </span>
+            </button>
           );
         })}
       </div>
-      <button onClick={onConfirm} disabled={busy} style={{ ...s.btnPrimary, width: '100%', marginTop: 18, padding: 14, fontSize: 15, opacity: busy ? 0.6 : 1 }}>
+      <button onClick={onConfirm} disabled={busy} className="ah-btn-confirm">
         {busy ? 'Processing…' : payMode === 'now' ? `Pay ₹${rupees(service?.priceInPaise)} & confirm` : 'Reserve my slot'}
       </button>
-      <div style={{ textAlign: 'center', fontSize: 11, color: c.mutedWarm, marginTop: 10 }}>
+      <div className="ah-review-foot">
         Free cancellation up to 12 hours before · secured by Razorpay
       </div>
     </div>
@@ -594,22 +580,10 @@ function SummaryCard({ service, date, startTime }) {
   );
 }
 
-function slotLabel(date, startTime) {
-  if (!startTime) return '—';
-  const d = new Date(`${date}T${startTime}:00`);
-  return d.toLocaleDateString('en-IN', { weekday: 'short', day: 'numeric', month: 'short' }) + ` · ${to12h(startTime)}`;
-}
-function to12h(hhmm) {
-  const [h, m] = hhmm.split(':').map(Number);
-  const ap = h >= 12 ? 'PM' : 'AM';
-  const hr = h % 12 || 12;
-  return `${hr}:${String(m).padStart(2, '0')} ${ap}`;
-}
-
 const Row = ({ label, value }) => (
-  <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 13.5 }}>
-    <span style={{ color: c.muted }}>{label}</span>
-    <span style={{ fontWeight: 600 }}>{value}</span>
+  <div className="ah-review-row">
+    <span className="ah-review-row-label">{label}</span>
+    <span className="ah-review-row-value">{value}</span>
   </div>
 );
 const MiniRow = ({ label, value, first, mono }) => (
