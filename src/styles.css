@@ -1,0 +1,276 @@
+* {
+  box-sizing: border-box;
+}
+html,
+body,
+#root {
+  margin: 0;
+  padding: 0;
+  min-height: 100%;
+}
+body {
+  background: #fdfbf7;
+  font-family: 'Public Sans', system-ui, sans-serif;
+  color: #1a1f2b;
+  -webkit-font-smoothing: antialiased;
+}
+input,
+select,
+textarea,
+button {
+  font-family: inherit;
+}
+a {
+  color: inherit;
+  text-decoration: none;
+}
+::selection {
+  background: rgba(201, 162, 39, 0.25);
+}
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(27, 60, 53, 0.16);
+  border-radius: 8px;
+  border: 2px solid #fdfbf7;
+}
+
+@keyframes ahFade {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes ahRise {
+  from {
+    opacity: 0;
+    transform: translateY(14px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes ahOverlay {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.ah-fade {
+  animation: ahFade 0.3s ease both;
+}
+.ah-rise {
+  animation: ahRise 0.5s ease both;
+}
+.ah-hero-img {
+  background-image: repeating-linear-gradient(135deg, #efe7d8, #efe7d8 11px, #f5efe2 11px, #f5efe2 22px);
+}
+
+.ah-card-hover {
+  transition: border-color 0.12s, box-shadow 0.12s, transform 0.12s;
+}
+.ah-card-hover:hover {
+  border-color: #1b3c35 !important;
+  box-shadow: 0 8px 22px rgba(27, 60, 53, 0.1);
+}
+
+/* ─── Home / marketing ─────────────────────────────────────────────────── */
+.ah-hero-section {
+  position: relative;
+  overflow: hidden;
+  padding: 56px 30px 40px;
+  text-align: center;
+}
+
+.ah-hero-inner {
+  position: relative;
+  z-index: 1;
+  max-width: 720px;
+  margin: 0 auto;
+}
+
+.ah-hero-rings {
+  position: absolute;
+  top: -40px;
+  right: -80px;
+  width: 520px;
+  height: 520px;
+  pointer-events: none;
+  background:
+    radial-gradient(circle at center, transparent 38%, rgba(27, 60, 53, 0.04) 38.5%, transparent 39%),
+    radial-gradient(circle at center, transparent 48%, rgba(27, 60, 53, 0.035) 48.5%, transparent 49%),
+    radial-gradient(circle at center, transparent 58%, rgba(27, 60, 53, 0.03) 58.5%, transparent 59%),
+    radial-gradient(circle at center, transparent 68%, rgba(27, 60, 53, 0.025) 68.5%, transparent 69%),
+    radial-gradient(circle at center, transparent 78%, rgba(27, 60, 53, 0.02) 78.5%, transparent 79%);
+  opacity: 0.9;
+}
+
+.ah-btn-primary-lg {
+  padding: 14px 26px;
+  border-radius: 11px;
+  border: none;
+  background: #1b3c35;
+  color: #fdfbf7;
+  font-weight: 600;
+  font-size: 15px;
+  cursor: pointer;
+}
+
+.ah-btn-outline-lg {
+  padding: 14px 24px;
+  border-radius: 11px;
+  border: 1px solid #e2dbcc;
+  background: #fff;
+  color: #1a1f2b;
+  font-weight: 600;
+  font-size: 15px;
+  cursor: pointer;
+}
+
+.ah-stats-bar {
+  display: inline-flex;
+  align-items: stretch;
+  margin-top: 36px;
+  background: #fff;
+  border: 1px solid #ece6da;
+  border-radius: 14px;
+  padding: 18px 8px;
+  box-shadow: 0 2px 12px rgba(27, 60, 53, 0.04);
+}
+
+.ah-stat {
+  padding: 0 28px;
+  text-align: center;
+}
+
+.ah-stat-divider {
+  border-left: 1px solid #e2dbcc;
+}
+
+.ah-stat-value {
+  font-family: 'Newsreader', Georgia, serif;
+  font-size: 22px;
+  color: #1b3c35;
+  line-height: 1.2;
+}
+
+.ah-stat-label {
+  font-size: 12px;
+  color: #8c9490;
+  margin-top: 2px;
+}
+
+.ah-therapy-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+}
+
+.ah-therapy-card {
+  background: #fff;
+  border: 1px solid #ece6da;
+  border-radius: 14px;
+  padding: 18px;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+}
+
+.ah-therapy-cat {
+  font-size: 10.5px;
+  letter-spacing: 0.12em;
+  font-weight: 700;
+  color: #9aa29c;
+  margin-bottom: 9px;
+}
+
+.ah-therapy-name {
+  font-family: 'Newsreader', Georgia, serif;
+  font-size: 19px;
+  font-weight: 500;
+  line-height: 1.2;
+  margin-bottom: 7px;
+  color: #1a1f2b;
+}
+
+.ah-therapy-blurb {
+  font-size: 12.5px;
+  color: #8c9490;
+  line-height: 1.45;
+  margin-bottom: 16px;
+  min-height: 36px;
+  flex: 1;
+}
+
+.ah-therapy-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: 12px;
+  border-top: 1px solid #f1ece1;
+}
+
+.ah-therapy-price {
+  font-size: 15px;
+  font-weight: 700;
+  color: #1b3c35;
+}
+
+.ah-therapy-book {
+  font-size: 12.5px;
+  font-weight: 600;
+  color: #5e8b72;
+}
+
+@media (max-width: 960px) {
+  .ah-therapy-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .ah-hero-rings {
+    right: -160px;
+    opacity: 0.5;
+  }
+}
+
+@media (max-width: 600px) {
+  .ah-therapy-grid {
+    grid-template-columns: 1fr;
+  }
+  .ah-stats-bar {
+    flex-direction: column;
+    width: 100%;
+    max-width: 320px;
+    padding: 12px 0;
+  }
+  .ah-stat {
+    padding: 10px 20px;
+  }
+  .ah-stat-divider {
+    border-left: none;
+    border-top: 1px solid #e2dbcc;
+  }
+}
+
+.ah-spinner {
+  width: 22px;
+  height: 22px;
+  border: 2.5px solid rgba(27, 60, 53, 0.18);
+  border-top-color: #1b3c35;
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+}
