@@ -1,8 +1,9 @@
-import { useState } from 'react';
-import { NavLink, useNavigate, Outlet, Link, useLocation } from 'react-router-dom';
+import { NavLink, useNavigate, Outlet, useLocation } from 'react-router-dom';
 import { useAuth } from '../auth.jsx';
 import { Logo } from './ui.jsx';
 import { c, font } from '../theme.js';
+import WellnessHeader from './WellnessHeader.jsx';
+import '../wellness.css';
 
 const HEADERS = [
   { match: /^\/dashboard/, title: 'My bookings', subtitle: 'Patient · account' },
@@ -18,199 +19,16 @@ function headerFor(pathname) {
   return HEADERS.find((h) => h.match.test(pathname)) || { title: 'Ahimsa Wellness', subtitle: '' };
 }
 
-function PublicNavLink({ to, label, end = false, onClick }) {
-  return (
-    <NavLink
-      to={to}
-      end={end}
-      onClick={onClick}
-      style={({ isActive }) => ({
-        padding: '8px 12px',
-        borderRadius: 8,
-        fontSize: 13.5,
-        fontWeight: isActive ? 600 : 500,
-        color: isActive ? c.teal : c.bodyText,
-        background: isActive ? c.navActive : 'transparent',
-        cursor: 'pointer',
-        textDecoration: 'none',
-      })}
-    >
-      {label}
-    </NavLink>
-  );
-}
-
-function MobileDrawer({ open, onClose, isPatient, isStaff, bookingsTo }) {
-  const navigate = useNavigate();
-  const location = useLocation();
-  if (!open) return null;
-
-  const go = (path, state) => {
-    onClose();
-    navigate(path, state ? { state } : undefined);
-  };
-
-  return (
-    <>
-      <div className="ah-mobile-drawer-overlay" onClick={onClose} aria-hidden="true" />
-      <nav className="ah-mobile-drawer" aria-label="Menu">
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
-          <Logo size={36} showWord />
-          <button type="button" className="ah-menu-btn" onClick={onClose} aria-label="Close menu">
-            ×
-          </button>
-        </div>
-        <Link
-          to="/"
-          className={`ah-drawer-link${location.pathname === '/' ? ' active' : ''}`}
-          onClick={onClose}
-        >
-          Home
-        </Link>
-        {isStaff ? (
-          <button type="button" className="ah-drawer-link" style={{ width: '100%', textAlign: 'left', border: 'none', background: 'transparent' }} onClick={() => go('/admin/today')}>
-            Workspace
-          </button>
-        ) : (
-          <button
-            type="button"
-            className={`ah-drawer-link${location.pathname === '/dashboard' ? ' active' : ''}`}
-            style={{ width: '100%', textAlign: 'left', border: 'none', background: location.pathname === '/dashboard' ? c.greenSoft : 'transparent' }}
-            onClick={() => go(bookingsTo, !isPatient ? { from: '/dashboard' } : undefined)}
-          >
-            My bookings
-          </button>
-        )}
-        {!isStaff && (
-          <button
-            type="button"
-            className="ah-drawer-link"
-            style={{ width: '100%', textAlign: 'left', border: 'none', background: 'transparent' }}
-            onClick={() => go('/staff/login')}
-          >
-            Staff sign in
-          </button>
-        )}
-        <button type="button" className="ah-drawer-cta" onClick={() => go('/book')}>
-          Book a session
-        </button>
-      </nav>
-    </>
-  );
-}
-
 export function PublicLayout() {
-  const navigate = useNavigate();
   const { isPatient, isStaff } = useAuth();
-  const location = useLocation();
-  const bookingsTo = isPatient ? '/dashboard' : '/login';
-  const [menuOpen, setMenuOpen] = useState(false);
-  const onBookPage = /^\/book/.test(location.pathname);
-
-  return (
-    <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', background: c.ivory }}>
-      <header className={`ah-public-header${onBookPage ? ' ah-public-header--booking' : ''}`}>
-        <Link to="/" style={{ textDecoration: 'none', color: 'inherit', minWidth: 0 }}>
-          <Logo size={38} showWord />
-        </Link>
-
-        <div className="ah-nav-desktop">
-          <PublicNavLink to="/" label="Home" end />
-          {isStaff ? (
-            <div
-              onClick={() => navigate('/admin/today')}
-              style={{ padding: '8px 12px', borderRadius: 8, fontSize: 13.5, fontWeight: 500, color: c.bodyText, cursor: 'pointer' }}
-            >
-              Workspace
-            </div>
-          ) : (
-            <NavLink
-              to={bookingsTo}
-              state={!isPatient ? { from: '/dashboard' } : undefined}
-              style={({ isActive }) => ({
-                padding: '8px 12px',
-                borderRadius: 8,
-                fontSize: 13.5,
-                fontWeight: isActive ? 600 : 500,
-                color: isActive ? c.teal : c.bodyText,
-                background: isActive && location.pathname === '/dashboard' ? c.navActive : 'transparent',
-                cursor: 'pointer',
-                textDecoration: 'none',
-              })}
-            >
-              My bookings
-            </NavLink>
-          )}
-          {!onBookPage && (
-            <button
-              type="button"
-              onClick={() => navigate('/book')}
-              style={{
-                marginLeft: 8,
-                padding: '10px 18px',
-                borderRadius: 9,
-                border: 'none',
-                background: c.teal,
-                color: c.ivory,
-                fontWeight: 600,
-                fontSize: 13.5,
-                cursor: 'pointer',
-              }}
-            >
-              Book a session
-            </button>
-          )}
-          {!isStaff && (
-            <div
-              onClick={() => navigate('/staff/login')}
-              style={{ marginLeft: 6, fontSize: 12, color: c.mutedWarm, cursor: 'pointer', padding: '6px 8px' }}
-            >
-              Staff sign in
-            </div>
-          )}
-        </div>
-
-        <div className="ah-nav-mobile-actions">
-          {!onBookPage && (
-            <button
-              type="button"
-              onClick={() => navigate('/book')}
-              style={{
-                padding: '9px 14px',
-                borderRadius: 9,
-                border: 'none',
-                background: c.teal,
-                color: c.ivory,
-                fontWeight: 600,
-                fontSize: 13,
-                cursor: 'pointer',
-                whiteSpace: 'nowrap',
-              }}
-            >
-              Book
-            </button>
-          )}
-          <button type="button" className="ah-menu-btn" onClick={() => setMenuOpen(true)} aria-label="Open menu">
-            ☰
-          </button>
-        </div>
-      </header>
-
-      <MobileDrawer
-        open={menuOpen}
-        onClose={() => setMenuOpen(false)}
-        isPatient={isPatient}
-        isStaff={isStaff}
-        bookingsTo={bookingsTo}
-      />
-
-      <main style={{ flex: 1, paddingBottom: isPatient && !isStaff && !onBookPage ? 'calc(72px + env(safe-area-inset-bottom))' : 0 }}>
-        <Outlet />
-      </main>
-
-      {isPatient && !isStaff && !onBookPage && <PatientBottomNav />}
-    </div>
-  );
+  const { pathname } = useLocation();
+  const onBookPage = /^\/book/.test(pathname);
+  return <div className="wellness-public-shell">
+    <a className="wellness-skip" href="#main-content">Skip to content</a>
+    <WellnessHeader />
+    <main id="main-content" style={{ flex: 1, paddingBottom: isPatient && !isStaff && !onBookPage ? 72 : 0 }}><Outlet /></main>
+    {isPatient && !isStaff && !onBookPage && <PatientBottomNav />}
+  </div>;
 }
 
 const iconStyle = { fontSize: 15, width: 18, textAlign: 'center' };

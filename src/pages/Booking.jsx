@@ -50,6 +50,8 @@ export default function Booking() {
   const { isPatient, patient, signInWithToken, refresh } = useAuth();
 
   const [services, setServices] = useState(null);
+  const [serviceError, setServiceError] = useState(false);
+  const [serviceAttempt, setServiceAttempt] = useState(0);
   const [step, setStep] = useState(0);
   const [serviceId, setServiceId] = useState(params.get('service') || '');
   const days = useMemo(() => nextCentreDays(7), []);
@@ -66,8 +68,15 @@ export default function Booking() {
   const service = services?.find((s) => s._id === serviceId);
 
   useEffect(() => {
-    api.get('/services', { auth: false }).then((d) => setServices(d.services)).catch(() => setServices([]));
-  }, []);
+    let current = true;
+    setServices(null);
+    setServiceError(false);
+    api.get('/services', { auth: false }).then((d) => {
+      if (!Array.isArray(d.services)) throw new Error('Invalid service response');
+      if (current) setServices(d.services);
+    }).catch(() => { if (current) { setServices([]); setServiceError(true); } });
+    return () => { current = false; };
+  }, [serviceAttempt]);
 
   useEffect(() => {
     if (isPatient && patient)
@@ -179,6 +188,15 @@ export default function Booking() {
   }
 
   if (!services) return <Spinner center />;
+  if (serviceError || services.length === 0) return (
+    <section className="booking-unavailable" aria-live="polite">
+      <p className="wellness-eyebrow">YOUR VISIT TO AHIMSA</p>
+      <h1>{serviceError ? 'Appointments are taking a moment.' : 'New appointments are on their way.'}</h1>
+      <p>{serviceError ? 'We couldn’t load live availability. Please try again shortly.' : 'There are no services available to book online right now. Please check back soon.'}</p>
+      <button className="wellness-button" onClick={() => setServiceAttempt(a => a + 1)}>Try again <span aria-hidden="true">↻</span></button>
+      <button className="wellness-text-link" onClick={() => navigate('/#therapies')}>Explore our therapies</button>
+    </section>
+  );
 
   const heading = ['Choose your therapy', 'Pick a time', 'Your details', 'Review & pay', "You're booked"][step];
   const showSummary = step >= 1 && step <= 3 && service;
