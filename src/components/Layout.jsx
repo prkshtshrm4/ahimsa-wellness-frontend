@@ -11,6 +11,7 @@ const HEADERS = [
   { match: /^\/invoice/, title: 'Invoice', subtitle: 'Patient · billing' },
   { match: /^\/admin\/today/, title: 'Today at the centre', subtitle: 'Front desk' },
   { match: /^\/admin\/new/, title: 'New booking', subtitle: 'Front desk · walk-in' },
+  { match: /^\/admin\/packages/, title: 'Packages', subtitle: 'Admin' },
   { match: /^\/admin\/services/, title: 'Services & pricing', subtitle: 'Admin' },
   { match: /^\/admin\/staff/, title: 'Staff & permissions', subtitle: 'Admin' },
   { match: /^\/admin\/schedule/, title: 'My schedule today', subtitle: 'Therapist' },
@@ -129,6 +130,7 @@ export function AppLayout() {
             <NavGroup label="FRONT DESK & ADMIN">
               {can('bookings.read') && <NavItem to="/admin/today" icon="▤" label="Today's bookings" />}
               {can('bookings.create') && <NavItem to="/admin/new" icon="＋" label="New walk-in" />}
+              {can('services.manage') && <NavItem to="/admin/packages" icon="◇" label="Packages" />}
               {can('services.manage') && <NavItem to="/admin/services" icon="≡" label="Services & pricing" />}
               {can('staff.manage') && <NavItem to="/admin/staff" icon="◎" label="Staff & permissions" />}
             </NavGroup>

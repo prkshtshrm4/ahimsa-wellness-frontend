@@ -1,5 +1,6 @@
 import { useEffect, useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
+import MyPackages from '../components/MyPackages.jsx';
 import { api, ApiError } from '../api.js';
 import { useAuth } from '../auth.jsx';
 import { c, font, s, rupees } from '../theme.js';
@@ -10,6 +11,7 @@ export default function Dashboard() {
   const { patient } = useAuth();
   const [upcoming, setUpcoming] = useState(null);
   const [past, setPast] = useState(null);
+  const [packageRefresh, setPackageRefresh] = useState(0);
   const [toast, setToast] = useState(null);
   const [reschedule, setReschedule] = useState(null); // booking being rescheduled
 
@@ -26,6 +28,7 @@ export default function Dashboard() {
       const res = await api.post(`/me/bookings/${b._id}/cancel`);
       setToast({ tone: 'info', msg: res.refundInPaise > 0 ? `Booking cancelled — full refund of ₹${rupees(res.refundInPaise)} in 3–5 days.` : 'Booking cancelled.' });
       load();
+      setPackageRefresh(n => n + 1);
     } catch (e) {
       if (e instanceof ApiError && e.code === 'cancellation_window_closed') {
         setToast({ tone: 'amber', msg: 'The free cancellation window (12h before) has closed. Please contact the front desk.' });
@@ -57,6 +60,8 @@ export default function Dashboard() {
         <button onClick={() => navigate('/book')} style={{ ...s.btnPrimary, padding: '11px 20px' }}>＋ Book a session</button>
       </div>
 
+      <MyPackages refreshKey={packageRefresh} onBooked={load} />
+
       <div style={{ ...s.sectionLabel, marginBottom: 12 }}>UPCOMING</div>
       {upcoming.length === 0 ? (
         <EmptyState
@@ -79,12 +84,12 @@ export default function Dashboard() {
                   <div style={{ fontSize: 13, color: c.bodyText }}>{whenLabel(b.when)} · with {b.therapistName}</div>
                   <div style={{ fontSize: 11.5, color: c.mutedWarm, marginTop: 7, display: 'flex', alignItems: 'center', gap: 6 }}>
                     <span style={{ color: c.sage }}>◷</span>
-                    {pending ? 'Complete payment to secure this slot' : canManage ? `Free cancellation until ${whenLabel(b.cancellableUntil)}` : 'Cancellation window closed'}
+                    {b.packageVisitCount > 1 && !b.packagePurchaseId ? 'Contact the centre for package changes or cancellation' : pending ? 'Complete payment to secure this slot' : canManage ? `Free cancellation until ${whenLabel(b.cancellableUntil)}` : 'Cancellation window closed'}
                   </div>
                 </div>
                 <div className="ah-dashboard-actions" style={{ display: 'flex', gap: 8, flexShrink: 0 }}>
-                  <button onClick={() => setReschedule(b)} disabled={!canManage} style={{ ...s.btnGhost, padding: '9px 15px', fontSize: 13, opacity: canManage ? 1 : 0.4, cursor: canManage ? 'pointer' : 'not-allowed' }}>Reschedule</button>
-                  <button onClick={() => cancel(b)} disabled={!canManage} style={{ padding: '9px 15px', borderRadius: 9, border: `1px solid ${c.dangerBorder}`, background: '#fff', fontSize: 13, fontWeight: 600, color: c.dangerText, cursor: canManage ? 'pointer' : 'not-allowed', opacity: canManage ? 1 : 0.4 }}>Cancel</button>
+                  <button onClick={() => setReschedule(b)} disabled={!canManage || !!b.packageVisitCount} title={b.packageVisitCount ? 'Contact the centre to move your first visit; cancel and rebook included follow-ups.' : undefined} style={{ ...s.btnGhost, padding: '9px 15px', fontSize: 13, opacity: canManage ? 1 : 0.4, cursor: canManage ? 'pointer' : 'not-allowed' }}>Reschedule</button>
+                  <button onClick={() => cancel(b)} disabled={!canManage || (b.packageVisitCount > 1 && !b.packagePurchaseId)} title={b.packageVisitCount > 1 && !b.packagePurchaseId ? 'Contact the centre to cancel a multi-visit package.' : undefined} style={{ padding: '9px 15px', borderRadius: 9, border: `1px solid ${c.dangerBorder}`, background: '#fff', fontSize: 13, fontWeight: 600, color: c.dangerText, cursor: canManage ? 'pointer' : 'not-allowed', opacity: canManage ? 1 : 0.4 }}>Cancel</button>
                 </div>
               </div>
             );

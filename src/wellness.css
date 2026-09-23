@@ -209,3 +209,47 @@ html{scroll-behavior:smooth;scroll-padding-top:110px}
 @media(prefers-reduced-motion:reduce){.background-film>video{display:none}.cinema-motion{display:none}}
 .hero-visual .motion-toggle{top:calc(100% - 8px);bottom:auto;right:20px;z-index:3;border:1px solid #b9c1ae;border-radius:24px;background:#f6f4ede8;padding:10px 16px}
 @media(max-width:780px){.hero-visual .motion-toggle{top:auto;bottom:0;right:12px}}
+
+/* Package catalogue, administration and included-visit booking. */
+.wellness-packages{padding-top:0}
+.package-public-grid,.package-admin-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,280px),1fr));gap:22px}
+.package-public-card{border:1px solid var(--w-line);background:#eeeee4;padding:30px;display:flex;flex-direction:column;align-items:flex-start}
+.package-public-card h3{margin-top:18px;font-size:35px;line-height:1.1}
+.package-public-card>p,.package-public-card li{font-size:13px;line-height:1.8}
+.package-public-card ul{padding-left:18px;margin-bottom:30px}
+.package-price{font:38px var(--w-serif);margin-top:auto;margin-bottom:25px}
+.package-price small{display:block;font:11px 'Public Sans',sans-serif;margin-top:8px;color:var(--w-muted)}
+.package-public-card .wellness-button{width:100%}
+.package-message{padding:22px;border:1px solid var(--w-line);line-height:1.7;font-size:14px}
+.package-message button{cursor:pointer;border:0;border-bottom:1px solid;background:none;font:inherit;color:var(--w-ink)}
+.package-admin-heading{display:flex;justify-content:space-between;gap:20px;align-items:center;flex-wrap:wrap;margin-bottom:26px}
+.package-admin-heading p{font-size:13px;color:#59675d;max-width:560px;line-height:1.7}
+.package-admin-card{border:1px solid var(--w-line);border-radius:8px;padding:22px;background:white;min-width:0;overflow-wrap:anywhere}
+.package-admin-card h2,.package-admin-card h3{font:28px var(--w-serif);margin:12px 0}
+.package-admin-card p,.package-admin-card li{font-size:13px;line-height:1.7;color:#526254}
+.package-card-label{font-size:10px;letter-spacing:.1em;color:#526254}
+.package-admin-actions{display:flex;gap:10px;flex-wrap:wrap;justify-content:flex-end;margin-top:25px}
+.package-admin-actions button{border:1px solid var(--w-line);border-radius:6px;min-height:42px;padding:9px 15px;background:var(--w-cream);cursor:pointer;color:var(--w-ink);font-size:13px}
+.package-editor{border:1px solid var(--w-line);border-radius:10px;width:min(600px,calc(100vw - 32px));max-height:90dvh;overflow:auto;padding:28px;background:var(--w-cream);color:var(--w-ink)}
+.package-editor::backdrop{background:#152b24aa;backdrop-filter:blur(4px)}
+.package-editor h2{font:32px var(--w-serif);margin-top:0}
+.package-editor fieldset{border:0;padding:0;margin:0;min-width:0}
+.package-form-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.package-form-grid .full{grid-column:1/-1}
+.package-editor label{font-size:12px;font-weight:600;display:block}
+.package-editor input:not([type=checkbox]),.package-editor textarea{display:block;width:100%;padding:11px;border:1px solid #bdc6b6;border-radius:5px;margin-top:7px;font-size:14px;color:var(--w-ink);background:white}
+.package-checkbox{display:flex!important;align-items:center;gap:9px}
+.package-editor-note{font-size:12px;line-height:1.7;color:#59675d}
+.package-book-now{display:flex;justify-content:space-between;gap:20px;border-top:1px solid var(--w-line);padding-top:12px;margin-top:13px;color:var(--w-ink);font-size:13px;font-weight:600}
+.package-booking-note{font-size:12px;color:#526254;margin-top:10px;line-height:1.6}
+.my-packages{margin:0 0 35px}
+.my-packages>h2{font:28px var(--w-serif)}
+.my-packages>p{font-size:13px;line-height:1.7}
+.package-slot-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:20px 0}
+.package-slot-grid>p{grid-column:1/-1;font-size:13px;line-height:1.7}
+.package-slot-grid button{border:1px solid var(--w-line);border-radius:5px;background:white;padding:12px;cursor:pointer;color:var(--w-ink)}
+.package-slot-grid button[aria-pressed=true]{background:var(--w-ink);color:white}
+.package-slot-grid small{display:block;font-size:10px;margin-top:5px}
+.package-admin button:disabled,.my-packages button:disabled,.package-slot-grid button:disabled{opacity:.5;cursor:not-allowed}
+@media(max-width:600px){.package-form-grid{grid-template-columns:1fr}.package-editor{padding:20px}.package-public-card{padding:25px}.package-admin{padding-left:18px!important;padding-right:18px!important}}
+@media(min-width:781px) and (max-width:1100px){.wellness-desktop{gap:14px;font-size:11px}}

@@ -10,7 +10,7 @@ export default function AdminServices() {
   const [editing, setEditing] = useState(null); // service or new
   const [toast, setToast] = useState(null);
 
-  const load = () => api.get('/services?includeInactive=true').then((d) => setServices(d.services)).catch(() => setServices([]));
+  const load = () => api.get('/services?includeInactive=true&kind=service').then((d) => setServices(d.services)).catch(() => setServices([]));
   useEffect(() => { load(); }, []);
 
   async function save(form) {

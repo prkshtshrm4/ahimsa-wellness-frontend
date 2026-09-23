@@ -11,6 +11,7 @@ import Dashboard from './pages/Dashboard.jsx';
 import InvoiceView from './pages/InvoiceView.jsx';
 import AdminToday from './pages/AdminToday.jsx';
 import AdminNewBooking from './pages/AdminNewBooking.jsx';
+import AdminPackages from './pages/AdminPackages.jsx';
 import AdminServices from './pages/AdminServices.jsx';
 import AdminStaff from './pages/AdminStaff.jsx';
 import TherapistSchedule from './pages/TherapistSchedule.jsx';
@@ -65,6 +66,7 @@ export default function App() {
         <Route path="/invoice/:id" element={<InvoiceView />} />
         <Route path="/admin/today" element={<RequireStaff module="bookings.read"><AdminToday /></RequireStaff>} />
         <Route path="/admin/new" element={<RequireStaff module="bookings.create"><AdminNewBooking /></RequireStaff>} />
+        <Route path="/admin/packages" element={<RequireStaff module="services.manage"><AdminPackages /></RequireStaff>} />
         <Route path="/admin/services" element={<RequireStaff module="services.manage"><AdminServices /></RequireStaff>} />
         <Route path="/admin/staff" element={<RequireStaff module="staff.manage"><AdminStaff /></RequireStaff>} />
         <Route path="/admin/schedule" element={<RequireStaff module="schedule.own"><TherapistSchedule /></RequireStaff>} />

@@ -116,14 +116,15 @@ export default function Booking() {
     if (!services) return [];
     const map = new Map();
     for (const svc of services) {
-      if (!map.has(svc.category)) map.set(svc.category, []);
-      map.get(svc.category).push(svc);
+      const category = svc.kind === 'package' ? 'WELLNESS PACKAGES' : svc.category;
+      if (!map.has(category)) map.set(category, []);
+      map.get(category).push(svc);
     }
     return [...map.entries()].map(([cat, items]) => ({ cat, items }));
   }, [services]);
 
   const canNext =
-    (step === 0 && serviceId) ||
+    (step === 0 && service && (service.kind !== 'package' || isPatient)) ||
     (step === 1 && startTime) ||
     (step === 2 && form.name.trim() && isValidIndianMobile(form.phone));
 
@@ -227,6 +228,7 @@ export default function Booking() {
               grouped={grouped}
               serviceId={serviceId}
               onPick={(id) => {
+                if (services.find(s => s._id === id)?.kind === 'package' && !isPatient) { navigate('/login', { state: { from: `/book?service=${id}` } }); return; }
                 setServiceId(id);
                 setStep(1);
               }}
@@ -327,10 +329,12 @@ function ServiceStep({ grouped, serviceId, onPick }) {
                     <div className="ah-service-card-check">{active ? '✓' : ''}</div>
                   </div>
                   <div className="ah-service-card-blurb">{svc.blurb}</div>
+                  {svc.kind === 'package' && <div className="package-booking-note">{svc.visitCount} visits · {svc.durationMin} min each · total package price</div>}
                   <div className="ah-service-card-foot">
                     <div className="ah-service-card-price">₹{rupees(svc.priceInPaise)}</div>
                     <div className="ah-service-card-dur">{svc.durationMin} min</div>
                   </div>
+                  <span className="package-book-now">Book now <span aria-hidden="true">↗</span></span>
                 </button>
               );
             })}
@@ -495,7 +499,8 @@ function ReviewStep({ service, date, startTime, form, payMode, setPayMode, busy,
   return (
     <div className="ah-fade ah-review-panel">
       <div className="ah-review-rows">
-        <Row label="Therapy" value={service?.name} />
+        <Row label={service?.kind === 'package' ? 'Package' : 'Therapy'} value={service?.name} />
+        {service?.kind === 'package' && <Row label="Included visits" value={`${service.visitCount} visits · ${service.durationMin} min each`} />}
         <Row label="When" value={slotLabel(date, startTime)} />
         <Row label="Name" value={form.name} />
       </div>
@@ -523,7 +528,7 @@ function ReviewStep({ service, date, startTime, form, payMode, setPayMode, busy,
         {busy ? 'Processing…' : payMode === 'now' ? `Pay ₹${rupees(service?.priceInPaise)} & confirm` : 'Reserve my slot'}
       </button>
       <div className="ah-review-foot">
-        Free cancellation up to 12 hours before · secured by Razorpay
+        {service?.kind === 'package' && service.visitCount > 1 ? 'Package changes and cancellations: contact the centre. Included follow-ups can be cancelled up to 12 hours before.' : 'Free cancellation up to 12 hours before · secured by Razorpay'}
       </div>
     </div>
   );
@@ -573,6 +578,7 @@ function SummaryCard({ service, date, startTime }) {
         <div>
           <div className="ah-summary-compact-label">YOUR SESSION</div>
           <div className="ah-summary-compact-name">{service?.name}</div>
+          {service?.kind === 'package' && <small>{service.visitCount} visits included</small>}
           {startTime && (
             <div style={{ fontSize: 11, color: '#A9C4B7', marginTop: 4 }}>{slotLabel(date, startTime)}</div>
           )}
@@ -584,7 +590,8 @@ function SummaryCard({ service, date, startTime }) {
         <div style={{ fontFamily: font.serif, fontSize: 22, color: c.ivory, lineHeight: 1.2 }}>{service?.name}</div>
         <div style={{ fontSize: 12.5, color: '#A9C4B7', marginTop: 6 }}>{service?.blurb}</div>
         <div style={{ height: 1, background: 'rgba(255,255,255,.12)', margin: '18px 0' }} />
-        <SumRow label="Duration" value={`${service?.durationMin} min`} />
+        {service?.kind === 'package' && <SumRow label="Included visits" value={service.visitCount} />}
+        <SumRow label={service?.kind === 'package' ? 'Per visit' : 'Duration'} value={`${service?.durationMin} min`} />
         <SumRow label="Therapist" value={service?.therapistName} />
         <SumRow label="Slot" value={startTime ? slotLabel(date, startTime) : '—'} />
         <div style={{ height: 1, background: 'rgba(255,255,255,.12)', margin: '18px 0' }} />
@@ -592,7 +599,7 @@ function SummaryCard({ service, date, startTime }) {
           <span style={{ fontSize: 13, color: '#A9C4B7' }}>Total</span>
           <span style={{ fontFamily: font.serif, fontSize: 26, color: c.gold }}>₹{rupees(service?.priceInPaise)}</span>
         </div>
-        <div style={{ fontSize: 11, color: c.sage, marginTop: 14, lineHeight: 1.5 }}>Free cancellation up to 12 hours before your session.</div>
+        <div style={{ fontSize: 11, color: c.sage, marginTop: 14, lineHeight: 1.5 }}>{service?.kind === 'package' && service.visitCount > 1 ? 'Book your first visit now. Schedule the remaining days from My bookings after payment. Contact the centre for package cancellations.' : 'Free cancellation up to 12 hours before your session.'}</div>
       </div>
     </aside>
   );

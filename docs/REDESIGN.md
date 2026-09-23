@@ -69,3 +69,17 @@ Verified in browser: muted background autoplay, off-screen suspension, shared pa
 Replaced the generated website JPEGs with WebP assets and 480 px responsive variants for therapy cards. Gallery cards select an appropriate image using `srcSet` / `sizes`; their existing lazy loading remains in place. The portrait and poster use optimized WebP. Removed two unused generated building photographs; the branding team's source files remain unchanged outside the repository.
 
 Total image files in `public/assets/wellness`: 2,110,550 bytes before, 405,622 bytes after (including mobile variants), approximately 81% smaller. The background MP4 is now 747,800 bytes, down from 1,875,387 bytes; the original short film is 623,139 bytes. Both are silent H.264 with fast-start metadata. The shared JPEG logo is also resized for its small display dimensions.
+
+## Packages — September 2026
+
+The visible Since badge now reads 1967 at the owner's request. The historical CCRYN employment dates remain unchanged.
+
+Admin → Packages supports create, edit, activate/deactivate and delete under the existing `services.manage` permission. Configure total price, number of visits (1–365), minutes per visit, per-slot capacity and inclusions. Public package cards and booking catalogue cards show Book now. Existing services remain managed separately.
+
+Packages can cover one visit or multiple days. Patients sign in before purchase, reserve the first appointment, then schedule included follow-ups under My bookings → My packages. Later visits require the package to be paid in full and do not create another payment. They must be on separate days after the first appointment; days need not be consecutive. No automatic expiry is imposed. A timely cancelled follow-up restores that visit credit. The first visit of a multi-visit purchase is changed/cancelled through the centre; the checkout explains this.
+
+Package capacity is dedicated to its own appointment slots, as with existing services. Listed inclusions are descriptions, not automatic reservations of the included therapies' rooms or staff. Existing purchases keep their original duration, visit count, price and inclusions after edits. Packages with booking history can be deactivated but not deleted.
+
+Backend and frontend must be deployed together. No destructive seed or migration is required; old services default to a single service. No real packages or prices were invented or added to production. Start by adding them in the admin panel.
+
+Validation: 9 backend integration tests against temporary MongoDB cover CRUD, permission denial, validation, historical snapshots, initial purchase, concurrent credit claims, same-day duplicates, ownership, unpaid purchases, cancellation credit restoration and full slots, and rejection of unrelated payment orders. Admin create/edit/deactivation and public card data were also verified in a temporary browser environment. External Firebase login and live Razorpay charging were not exercised.
