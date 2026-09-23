@@ -329,6 +329,7 @@ function ServiceStep({ grouped, serviceId, onPick }) {
                     <div className="ah-service-card-check">{active ? '✓' : ''}</div>
                   </div>
                   <div className="ah-service-card-blurb">{svc.blurb}</div>
+                  {svc.includedServices?.length > 0 && <div className="ah-service-card-blurb">Includes: {svc.includedServices.map(item => item.name).join(', ')}</div>}
                   {svc.kind === 'package' && <div className="package-booking-note">{svc.visitCount} visits · {svc.durationMin} min each · total package price</div>}
                   <div className="ah-service-card-foot">
                     <div className="ah-service-card-price">₹{rupees(svc.priceInPaise)}</div>

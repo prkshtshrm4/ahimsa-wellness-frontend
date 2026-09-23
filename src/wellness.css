@@ -253,3 +253,10 @@ html{scroll-behavior:smooth;scroll-padding-top:110px}
 .package-admin button:disabled,.my-packages button:disabled,.package-slot-grid button:disabled{opacity:.5;cursor:not-allowed}
 @media(max-width:600px){.package-form-grid{grid-template-columns:1fr}.package-editor{padding:20px}.package-public-card{padding:25px}.package-admin{padding-left:18px!important;padding-right:18px!important}}
 @media(min-width:781px) and (max-width:1100px){.wellness-desktop{gap:14px;font-size:11px}}
+
+.package-service-picker > p { font-size: 13px; line-height: 1.6; }
+.package-service-picker > button { margin: 10px 0; }
+.package-service-options { max-height: 240px; overflow-y: auto; border: 1px solid #dedfd5; border-radius: 10px; }
+.package-form-grid .package-service-option { display: flex; flex-direction: row; align-items: center; gap: 12px; padding: 12px; border-bottom: 1px solid #eee; cursor: pointer; }
+.package-form-grid .package-service-option input { width: 18px; height: 18px; flex-shrink: 0; }
+.package-service-option small { display: block; margin-top: 4px; color: #68766c; font-weight: 400; }
