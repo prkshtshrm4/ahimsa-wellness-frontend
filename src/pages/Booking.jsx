@@ -65,7 +65,7 @@ export default function Booking() {
   const [done, setDone] = useState(null); // { booking, paid }
   const [phoneLookup, setPhoneLookup] = useState(null);
 
-  const service = services?.find((s) => s._id === serviceId);
+  const service = services?.find((s) => s._id === serviceId && !s.enquiryOnly);
 
   useEffect(() => {
     let current = true;
@@ -321,7 +321,7 @@ function ServiceStep({ grouped, serviceId, onPick }) {
                 <button
                   key={svc._id}
                   type="button"
-                  onClick={() => onPick(svc._id)}
+                  onClick={() => { if (svc.enquiryOnly) window.location.href = 'tel:+919873124147'; else onPick(svc._id); }}
                   className={`ah-service-card${active ? ' active' : ''}`}
                 >
                   <div className="ah-service-card-top">
@@ -330,12 +330,12 @@ function ServiceStep({ grouped, serviceId, onPick }) {
                   </div>
                   <div className="ah-service-card-blurb">{svc.blurb}</div>
                   {svc.includedServices?.length > 0 && <div className="ah-service-card-blurb">Includes: {svc.includedServices.map(item => item.name).join(', ')}</div>}
-                  {svc.kind === 'package' && <div className="package-booking-note">{svc.visitCount} visits · {svc.durationMin} min each · total package price</div>}
+                  {svc.kind === 'package' && <div className="package-booking-note">{svc.visitCount} {svc.visitCount === 1 ? 'day' : 'days / visits'} · total package price</div>}
                   <div className="ah-service-card-foot">
-                    <div className="ah-service-card-price">₹{rupees(svc.priceInPaise)}</div>
-                    <div className="ah-service-card-dur">{svc.durationMin} min</div>
+                    <div className="ah-service-card-price">{svc.priceLabel || `₹${rupees(svc.priceInPaise)}`}</div>
+                    <div className="ah-service-card-dur">{svc.enquiryOnly ? 'Arrange with centre' : `${svc.durationMin} min`}</div>
                   </div>
-                  <span className="package-book-now">Book now <span aria-hidden="true">↗</span></span>
+                  <span className="package-book-now">{svc.enquiryOnly ? 'Call to book' : 'Book now'} <span aria-hidden="true">↗</span></span>
                 </button>
               );
             })}

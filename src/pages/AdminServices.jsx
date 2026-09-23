@@ -25,6 +25,8 @@ export default function AdminServices() {
         capacityUnit: form.capacityUnit,
         active: form.active,
         packageOnly: form.packageOnly,
+        enquiryOnly: form.enquiryOnly,
+        priceLabel: form.priceLabel,
       };
       if (form._id) await api.patch(`/admin/services/${form._id}`, body);
       else await api.post('/admin/services', body);
@@ -71,7 +73,7 @@ export default function AdminServices() {
         {services.map((svc) => (
           <div key={svc._id} style={{ display: 'grid', gridTemplateColumns: '1.6fr 1fr 90px 90px 100px 80px', gap: 12, padding: '14px 18px', borderBottom: `1px solid ${c.borderSoft}`, alignItems: 'center', opacity: svc.active ? 1 : 0.55 }}>
             <div>
-              <div style={{ fontWeight: 600, fontSize: 14 }}>{svc.name} {svc.packageOnly && <span style={{ fontSize: 11, color: c.teal }}>· package only</span>} {!svc.active && <span style={{ fontSize: 11, color: c.mutedWarm }}>· inactive</span>}</div>
+              <div style={{ fontWeight: 600, fontSize: 14 }}>{svc.name} {svc.enquiryOnly && <span style={{ fontSize: 11 }}>· contact to book</span>} {svc.packageOnly && <span style={{ fontSize: 11, color: c.teal }}>· package only</span>} {!svc.active && <span style={{ fontSize: 11, color: c.mutedWarm }}>· inactive</span>}</div>
               <div style={{ fontSize: 11.5, color: c.muted }}>{svc.therapistName}</div>
             </div>
             <div style={{ fontSize: 12, color: c.bodyText }}>{svc.category}</div>
@@ -101,6 +103,8 @@ function ServiceModal({ initial, onClose, onSave }) {
     capacityUnit: initial.capacityUnit || 'spots',
     active: initial.active ?? true,
     packageOnly: initial.packageOnly ?? false,
+    enquiryOnly: initial.enquiryOnly ?? false,
+    priceLabel: initial.priceLabel || '',
   });
   const set = (k) => (e) => setForm({ ...form, [k]: e.target.value });
 
@@ -112,6 +116,7 @@ function ServiceModal({ initial, onClose, onSave }) {
         <label style={{ ...s.label, gridColumn: '1 / -1' }}>Category<input value={form.category} onChange={set('category')} placeholder="e.g. HYDRO & MUD THERAPY" style={s.input} /></label>
         <label style={{ ...s.label, gridColumn: '1 / -1' }}>Blurb<textarea value={form.blurb} onChange={set('blurb')} rows={2} style={{ ...s.input, resize: 'vertical' }} /></label>
         <label style={s.label}>{form.packageOnly ? 'Reference price (₹, optional)' : 'Price (₹)'}<input value={form.price} onChange={set('price')} type="number" style={s.input} /></label>
+        <label style={{ ...s.label, gridColumn: '1 / -1' }}>Displayed price note (optional)<input value={form.priceLabel} onChange={set('priceLabel')} maxLength={200} style={s.input} /></label>
         <label style={s.label}>Duration (min)<input value={form.durationMin} onChange={set('durationMin')} type="number" style={s.input} /></label>
         <label style={s.label}>Capacity<input value={form.capacity} onChange={set('capacity')} type="number" style={s.input} /></label>
         <label style={s.label}>Unit<input value={form.capacityUnit} onChange={set('capacityUnit')} placeholder="tubs / rooms / mats" style={s.input} /></label>
@@ -121,6 +126,7 @@ function ServiceModal({ initial, onClose, onSave }) {
         <label style={{ ...s.label, gridColumn: '1 / -1', display: 'flex', alignItems: 'center', gap: 8 }}>
           <input type="checkbox" checked={form.packageOnly} onChange={e => setForm({ ...form, packageOnly: e.target.checked })} /> Package only — unavailable for individual booking
         </label>
+        <label style={{ ...s.label, gridColumn: '1 / -1' }}><input type="checkbox" checked={form.enquiryOnly} onChange={e => setForm({ ...form, enquiryOnly: e.target.checked })} /> Contact to book — confirm duration, capacity and price before enabling online booking</label>
       </div>
       <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 10, marginTop: 20 }}>
         <button onClick={onClose} style={s.btnGhost}>Cancel</button>

@@ -44,7 +44,7 @@ export default function AdminNewBooking() {
   const service = services.find((s2) => s2._id === serviceId);
 
   useEffect(() => {
-    api.get('/services').then((d) => { setServices(d.services); if (d.services[0]) setServiceId(d.services[0]._id); });
+    api.get('/services').then((d) => { const bookable = d.services.filter(s => !s.enquiryOnly); setServices(bookable); if (bookable[0]) setServiceId(bookable[0]._id); });
   }, []);
 
   // Patient typeahead.
