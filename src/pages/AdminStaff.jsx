@@ -10,6 +10,7 @@ const MODULES = [
   { key: 'bookings.read', label: 'Bookings calendar', group: 'Front desk' },
   { key: 'bookings.create', label: 'Walk-in booking', group: 'Front desk' },
   { key: 'bookings.manage', label: 'Manage bookings', group: 'Front desk' },
+  { key: 'cases.manage', label: 'Case sheets & intake', group: 'Doctors' },
   { key: 'services.manage', label: 'Services & pricing', group: 'Admin' },
   { key: 'staff.manage', label: 'Staff management', group: 'Admin' },
   { key: 'payments.collect', label: 'Collect payments', group: 'Payments' },
@@ -18,6 +19,24 @@ const MODULES = [
   { key: 'schedule.own', label: 'My schedule (own)', group: 'Therapist' },
   { key: 'reports.read', label: 'Reports & KPIs', group: 'Admin' },
 ];
+
+const ROLE_PRESETS = {
+  Doctor: {
+    role: 'Doctor',
+    grantedModules: ['cases.manage', 'bookings.read', 'schedule.own', 'invoices.read'],
+    isTherapist: true,
+  },
+  Receptionist: {
+    role: 'Receptionist',
+    grantedModules: ['bookings.read', 'bookings.create', 'bookings.manage', 'payments.collect', 'payments.link'],
+    isTherapist: false,
+  },
+  Therapist: {
+    role: 'Therapist',
+    grantedModules: ['schedule.own', 'bookings.read'],
+    isTherapist: true,
+  },
+};
 
 export default function AdminStaff() {
   const [staff, setStaff] = useState(null);
@@ -120,10 +139,11 @@ export default function AdminStaff() {
 }
 
 function InviteModal({ onClose, onDone }) {
-  const [form, setForm] = useState({ name: '', email: '', phone: '', role: 'Receptionist' });
+  const [form, setForm] = useState({ name: '', email: '', phone: '', role: 'Doctor' });
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState(null);
   const set = (k) => (e) => setForm({ ...form, [k]: e.target.value });
+  const preset = ROLE_PRESETS[form.role];
 
   async function submit() {
     if (!isValidIndianMobile(form.phone)) {
@@ -132,10 +152,14 @@ function InviteModal({ onClose, onDone }) {
     }
     try {
       setBusy(true);
+      const modules = preset?.grantedModules || ['bookings.read'];
       await api.post('/admin/staff/invite', {
-        ...form,
+        name: form.name,
+        email: form.email,
+        role: form.role,
         phone: toE164(form.phone),
-        grantedModules: ['bookings.read'],
+        grantedModules: modules,
+        isTherapist: preset?.isTherapist || false,
       });
       onDone();
     } catch (e) {
@@ -156,7 +180,18 @@ function InviteModal({ onClose, onDone }) {
           Mobile number
           <PhoneInput value={form.phone} onChange={(digits) => setForm({ ...form, phone: digits })} />
         </label>
-        <label style={s.label}>Role<input value={form.role} onChange={set('role')} style={s.input} /></label>
+        <label style={s.label}>Role
+          <select value={form.role} onChange={set('role')} style={s.input}>
+            <option value="Doctor">Doctor</option>
+            <option value="Receptionist">Receptionist</option>
+            <option value="Therapist">Therapist</option>
+          </select>
+        </label>
+        {preset && (
+          <div style={{ fontSize: 12, color: c.muted, lineHeight: 1.45, background: c.greenSoft, border: `1px solid ${c.greenBorder}`, borderRadius: 9, padding: '10px 12px' }}>
+            Preset modules: {preset.grantedModules.map((k) => MODULES.find((m) => m.key === k)?.label || k).join(' · ')}. You can tweak them after inviting.
+          </div>
+        )}
       </div>
       <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 10, marginTop: 20 }}>
         <button onClick={onClose} style={s.btnGhost}>Cancel</button>

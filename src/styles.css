@@ -1501,3 +1501,334 @@ a {
   border-radius: 50%;
   animation: spin 0.7s linear infinite;
 }
+
+/* ─── QR intake (mobile-first case sheet) ─────────────────────────────── */
+.ah-intake {
+  min-height: 100dvh;
+  background:
+    radial-gradient(120% 80% at 10% -10%, rgba(127, 168, 143, 0.28), transparent 55%),
+    radial-gradient(90% 60% at 100% 0%, rgba(184, 147, 85, 0.16), transparent 50%),
+    linear-gradient(180deg, #f7f3ea 0%, #fdfbf7 42%, #f3f7f4 100%);
+  color: #1a1f2b;
+}
+.ah-intake-shell {
+  max-width: 520px;
+  margin: 0 auto;
+  padding: 18px 16px calc(96px + env(safe-area-inset-bottom));
+}
+.ah-intake-top {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-bottom: 14px;
+}
+.ah-intake-progress {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 6px;
+}
+.ah-intake-dot {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  opacity: 0.45;
+}
+.ah-intake-dot span {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: 1.5px solid #cfd8d2;
+  background: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 700;
+  color: #8c9490;
+}
+.ah-intake-dot em {
+  font-style: normal;
+  font-size: 10px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  font-weight: 700;
+  color: #8c9490;
+}
+.ah-intake-dot.is-active,
+.ah-intake-dot.is-done {
+  opacity: 1;
+}
+.ah-intake-dot.is-active span {
+  background: #1b3c35;
+  border-color: #1b3c35;
+  color: #fdfbf7;
+}
+.ah-intake-dot.is-done span {
+  background: #edf3ee;
+  border-color: #1b3c35;
+  color: #1b3c35;
+}
+.ah-intake-card {
+  background: rgba(255, 255, 255, 0.92);
+  border: 1px solid #ece6da;
+  border-radius: 18px;
+  padding: 20px 16px 18px;
+  box-shadow: 0 10px 40px rgba(27, 60, 53, 0.06);
+}
+.ah-intake-section h1 {
+  font-family: 'Newsreader', Georgia, serif;
+  font-weight: 500;
+  font-size: 26px;
+  margin: 0 0 6px;
+  line-height: 1.15;
+}
+.ah-intake-lead {
+  margin: 0 0 18px;
+  color: #5b615e;
+  font-size: 14px;
+  line-height: 1.45;
+}
+.ah-intake-label {
+  display: block;
+  font-size: 12px;
+  font-weight: 600;
+  color: #59615f;
+  margin-bottom: 12px;
+}
+.ah-intake-label input,
+.ah-intake-label select,
+.ah-intake-label textarea {
+  display: block;
+  width: 100%;
+  margin-top: 6px;
+  padding: 12px 12px;
+  border: 1px solid #e2dbcc;
+  border-radius: 10px;
+  background: #fcfaf5;
+  color: #1a1f2b;
+  font-size: 16px;
+  box-sizing: border-box;
+  resize: vertical;
+}
+.ah-intake-label input:focus,
+.ah-intake-label select:focus,
+.ah-intake-label textarea:focus {
+  outline: 2px solid rgba(27, 60, 53, 0.22);
+  border-color: #7fa88f;
+}
+.ah-intake-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+.ah-intake-consent {
+  max-height: 240px;
+  overflow: auto;
+  padding: 12px 14px;
+  border-radius: 12px;
+  background: #f7f4ec;
+  border: 1px solid #e2dbcc;
+  margin-bottom: 14px;
+  -webkit-overflow-scrolling: touch;
+}
+.ah-intake-consent p {
+  margin: 0 0 12px;
+  font-size: 13px;
+  line-height: 1.5;
+  color: #3d4541;
+}
+.ah-intake-consent p:last-child {
+  margin-bottom: 0;
+}
+.ah-intake-check {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  font-size: 13.5;
+  font-weight: 600;
+  color: #1b3c35;
+  margin-bottom: 14px;
+  line-height: 1.4;
+}
+.ah-intake-check input {
+  margin-top: 3px;
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+}
+.ah-intake-sig-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 12px;
+  font-weight: 600;
+  color: #59615f;
+  margin-bottom: 6px;
+}
+.ah-intake-clear {
+  border: none;
+  background: transparent;
+  color: #a8543a;
+  font-weight: 600;
+  font-size: 12.5px;
+  cursor: pointer;
+}
+.ah-intake-sig {
+  width: 100%;
+  height: 160px;
+  border-radius: 12px;
+  border: 1.5px dashed #c9b896;
+  background: #fcfaf5;
+  touch-action: none;
+  display: block;
+}
+.ah-intake-hint {
+  font-size: 12px;
+  color: #8c9490;
+  margin: 8px 0 0;
+}
+.ah-intake-error {
+  margin-top: 12px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: #fbefea;
+  border: 1px solid #e8d3c9;
+  color: #a8543a;
+  font-size: 13px;
+  font-weight: 600;
+}
+.ah-intake-actions {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 12px 16px calc(12px + env(safe-area-inset-bottom));
+  background: rgba(253, 251, 247, 0.94);
+  border-top: 1px solid #ece6da;
+  backdrop-filter: blur(10px);
+  z-index: 30;
+}
+.ah-intake-shell .ah-intake-actions {
+  max-width: 520px;
+  margin: 0 auto;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100%;
+  box-sizing: border-box;
+}
+.ah-intake-btn {
+  min-height: 48px;
+  padding: 12px 18px;
+  border-radius: 12px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+}
+.ah-intake-btn.primary {
+  background: #1b3c35;
+  color: #fdfbf7;
+  flex: 1;
+}
+.ah-intake-btn.ghost {
+  background: #fff;
+  color: #1a1f2b;
+  border: 1px solid #e2dbcc;
+  min-width: 96px;
+}
+.ah-intake-btn:disabled {
+  opacity: 0.55;
+  cursor: default;
+}
+.ah-intake-success {
+  margin-top: 40px;
+  text-align: center;
+  background: rgba(255, 255, 255, 0.94);
+  border: 1px solid #ece6da;
+  border-radius: 20px;
+  padding: 36px 22px;
+}
+.ah-intake-success-mark {
+  width: 56px;
+  height: 56px;
+  margin: 0 auto 14px;
+  border-radius: 50%;
+  background: #1b3c35;
+  color: #fdfbf7;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  font-weight: 700;
+}
+.ah-intake-success h1 {
+  font-family: 'Newsreader', Georgia, serif;
+  font-weight: 500;
+  font-size: 28px;
+  margin: 0 0 8px;
+}
+.ah-intake-success p {
+  color: #5b615e;
+  font-size: 14.5px;
+  line-height: 1.45;
+  margin: 0 0 18px;
+}
+.ah-intake-patient-no {
+  display: inline-flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 14px 22px;
+  border-radius: 14px;
+  background: #edf3ee;
+  border: 1px solid #cfe2d5;
+  margin-bottom: 12px;
+}
+.ah-intake-patient-no span {
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  font-weight: 700;
+  color: #7fa88f;
+  text-transform: uppercase;
+}
+.ah-intake-patient-no strong {
+  font-size: 20px;
+  letter-spacing: 0.02em;
+  color: #1b3c35;
+}
+.ah-intake-link {
+  display: inline-block;
+  margin-top: 8px;
+  color: #1b3c35;
+  font-weight: 600;
+  font-size: 14px;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.ah-intake-brand {
+  padding-top: 8px;
+}
+
+@media (max-width: 720px) {
+  .ah-cases-grid {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+@media print {
+  .ah-app-sidebar,
+  .ah-app-topbar,
+  .ah-patient-bottom-nav,
+  button,
+  a {
+    display: none !important;
+  }
+  .ah-app-content,
+  .ah-app-shell {
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+}

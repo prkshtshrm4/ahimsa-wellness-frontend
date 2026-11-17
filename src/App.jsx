@@ -17,6 +17,9 @@ import AdminStaff from './pages/AdminStaff.jsx';
 import TherapistSchedule from './pages/TherapistSchedule.jsx';
 import Forbidden from './pages/Forbidden.jsx';
 import LinkPhone from './pages/LinkPhone.jsx';
+import Intake from './pages/Intake.jsx';
+import AdminCases from './pages/AdminCases.jsx';
+import AdminIntakeQr from './pages/AdminIntakeQr.jsx';
 
 function RequireAuth({ children }) {
   const { identity, loading } = useAuth();
@@ -38,6 +41,9 @@ function RequireStaff({ module, children }) {
 export default function App() {
   return (
     <Routes>
+      {/* Standalone QR intake — no site chrome */}
+      <Route path="/intake" element={<Intake />} />
+
       {/* Public */}
       <Route element={<PublicLayout />}>
         <Route index element={<Home />} />
@@ -69,6 +75,9 @@ export default function App() {
         <Route path="/admin/packages" element={<RequireStaff module="services.manage"><AdminPackages /></RequireStaff>} />
         <Route path="/admin/services" element={<RequireStaff module="services.manage"><AdminServices /></RequireStaff>} />
         <Route path="/admin/staff" element={<RequireStaff module="staff.manage"><AdminStaff /></RequireStaff>} />
+        <Route path="/admin/cases" element={<RequireStaff module="cases.manage"><AdminCases /></RequireStaff>} />
+        <Route path="/admin/cases/:id" element={<RequireStaff module="cases.manage"><AdminCases /></RequireStaff>} />
+        <Route path="/admin/intake-qr" element={<RequireStaff module="cases.manage"><AdminIntakeQr /></RequireStaff>} />
         <Route path="/admin/schedule" element={<RequireStaff module="schedule.own"><TherapistSchedule /></RequireStaff>} />
       </Route>
 
