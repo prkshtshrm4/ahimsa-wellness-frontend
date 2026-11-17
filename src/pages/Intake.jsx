@@ -2,10 +2,10 @@ import { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { api, ApiError } from '../api.js';
 import PhoneInput from '../components/PhoneInput.jsx';
-import { toE164, isValidIndianMobile } from '../utils/phone.js';
+import { toE164, isValidIndianMobile, toLocalDigits } from '../utils/phone.js';
 import { Logo } from '../components/ui.jsx';
 
-const STEPS = ['You', 'Complaints', 'History', 'Consent'];
+const STEPS = ['You', 'Health', 'History', 'Consent'];
 
 const CONSENT_PARAS = [
   'I have seen and understood the facilities, manpower, type of treatments available at Ahimsa Wellness Centre, Gurugram and also understood the limitations of such treatments. I have also learnt the charges payable for different treatments.',
@@ -16,29 +16,108 @@ const CONSENT_PARAS = [
   'I also undertake to inform the treating doctors in advance in case I undergo any other type of treatments while I am undergoing treatment at Ahimsa Wellness Centre, Gurugram to avoid any complications.',
 ];
 
+const GENDERS = ['Female', 'Male', 'Other'];
+const MARITAL = ['Single', 'Married', 'Widowed', 'Divorced'];
+const OCCUPATIONS = ['Homemaker', 'Service / Job', 'Business', 'Student', 'Retired', 'Professional', 'Other'];
+const AREAS = [
+  'Sector 45', 'Sector 56', 'DLF Phase 1', 'DLF Phase 2', 'DLF Phase 3', 'DLF Phase 4', 'DLF Phase 5',
+  'Golf Course Road', 'Sohna Road', 'MG Road', 'Gurgaon other', 'Delhi NCR', 'Out of town',
+];
+const PHYSICAL = [
+  'Back pain', 'Joint pain', 'Neck / shoulder', 'Fatigue', 'Digestion', 'Acidity',
+  'Headache', 'Weight issues', 'Skin', 'Breathing', 'BP / sugar', 'Other',
+];
+const MENTAL = ['Stress', 'Anxiety', 'Low mood', 'Poor focus', 'Anger', 'None'];
+const SOCIAL = ['Work pressure', 'Family stress', 'Loneliness', 'None'];
+const SEXUAL = ['None', 'Low energy', 'Discomfort', 'Prefer not to say'];
+const ADDICTIONS = ['None', 'Tea / coffee', 'Tobacco', 'Alcohol', 'Smoking', 'Other'];
+const DIETS = ['Vegetarian', 'Eggetarian', 'Non-vegetarian', 'Vegan', 'Jain'];
+const SLEEP = ['Sound (7–8 hrs)', 'Light sleeper', 'Insomnia', 'Less than 5 hrs', 'Irregular'];
+const PAST = ['None', 'Diabetes', 'BP', 'Thyroid', 'Asthma', 'Surgery', 'Heart', 'Other'];
+const INVEST = ['None', 'Blood reports', 'Scan / X-ray', 'Reports with me', 'Other'];
+const MEDS = ['None', 'Allopathy', 'Ayurveda', 'Homeopathy', 'Supplements', 'Other'];
+
 const empty = {
   name: '',
   gender: '',
   age: '',
   occupation: '',
   maritalStatus: '',
+  area: '',
   address: '',
   phone: '',
   email: '',
   identificationCard: '',
-  complaintPhysical: '',
-  complaintMental: '',
-  complaintSocial: '',
-  complaintSexual: '',
-  addictions: '',
+  idType: '',
+  complaintPhysical: [],
+  complaintMental: [],
+  complaintSocial: [],
+  complaintSexual: [],
+  addictions: [],
   dietaryHabits: '',
   sleepHabits: '',
-  pastHistory: '',
-  investigationsDone: '',
-  medicationsAtPresent: '',
+  pastHistory: [],
+  investigationsDone: [],
+  medicationsAtPresent: [],
+  notes: '',
   consentAccepted: false,
   consentSignedName: '',
 };
+
+function ChipGroup({ label, options, value, onChange, multi = false, hint }) {
+  const selected = multi
+    ? (Array.isArray(value) ? value : [])
+    : value
+      ? [value]
+      : [];
+
+  function tap(opt) {
+    if (!multi) {
+      onChange(value === opt ? '' : opt);
+      return;
+    }
+    const has = selected.includes(opt);
+    // Exclusive "None"
+    if (opt === 'None') {
+      onChange(has ? [] : ['None']);
+      return;
+    }
+    let next = selected.filter((x) => x !== 'None');
+    next = has ? next.filter((x) => x !== opt) : [...next, opt];
+    onChange(next);
+  }
+
+  return (
+    <div className="ah-intake-chips-block">
+      <div className="ah-intake-chips-label">
+        {label}
+        {hint && <span>{hint}</span>}
+      </div>
+      <div className="ah-intake-chips" role="group" aria-label={label}>
+        {options.map((opt) => {
+          const on = selected.includes(opt);
+          return (
+            <button
+              key={opt}
+              type="button"
+              className={`ah-intake-chip${on ? ' is-on' : ''}`}
+              aria-pressed={on}
+              onClick={() => tap(opt)}
+            >
+              {opt}
+            </button>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
+function joinList(arr) {
+  if (!Array.isArray(arr) || !arr.length) return '';
+  if (arr.length === 1 && arr[0] === 'None') return 'None';
+  return arr.filter((x) => x !== 'None').join(', ');
+}
 
 export default function Intake() {
   const [step, setStep] = useState(0);
@@ -47,6 +126,7 @@ export default function Intake() {
   const [err, setErr] = useState(null);
   const [done, setDone] = useState(null);
   const [sigEmpty, setSigEmpty] = useState(true);
+  const [contactOk, setContactOk] = useState(false);
   const canvasRef = useRef(null);
   const drawing = useRef(false);
 
@@ -55,8 +135,16 @@ export default function Intake() {
 
   useEffect(() => {
     document.title = 'Case sheet · Ahimsa Wellness';
+    setContactOk(typeof navigator !== 'undefined' && 'contacts' in navigator && 'ContactsManager' in window);
     return () => { document.title = 'Ahimsa Wellness'; };
   }, []);
+
+  // Prefill signed name when reaching consent
+  useEffect(() => {
+    if (step === 3 && !form.consentSignedName && form.name) {
+      setForm((f) => ({ ...f, consentSignedName: f.name }));
+    }
+  }, [step]); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -72,6 +160,7 @@ export default function Intake() {
     ctx.strokeStyle = '#1B3C35';
     ctx.fillStyle = '#FCFAF5';
     ctx.fillRect(0, 0, rect.width, rect.height);
+    setSigEmpty(true);
   }, [step]);
 
   function pointerPos(e) {
@@ -80,7 +169,6 @@ export default function Intake() {
     const src = e.touches ? e.touches[0] : e;
     return { x: src.clientX - rect.left, y: src.clientY - rect.top };
   }
-
   function startDraw(e) {
     e.preventDefault();
     drawing.current = true;
@@ -98,9 +186,7 @@ export default function Intake() {
     ctx.stroke();
     setSigEmpty(false);
   }
-  function endDraw() {
-    drawing.current = false;
-  }
+  function endDraw() { drawing.current = false; }
   function clearSig() {
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -111,6 +197,29 @@ export default function Intake() {
     setSigEmpty(true);
   }
 
+  async function pickFromPhone() {
+    try {
+      const contacts = await navigator.contacts.select(['name', 'tel', 'email', 'address'], { multiple: false });
+      const c = contacts?.[0];
+      if (!c) return;
+      setForm((f) => {
+        const next = { ...f };
+        if (c.name?.[0]) next.name = String(c.name[0]).slice(0, 120);
+        const tel = c.tel?.[0];
+        if (tel) next.phone = toLocalDigits(tel);
+        if (c.email?.[0] && !next.email) next.email = String(c.email[0]).slice(0, 160);
+        const addr = c.address?.[0];
+        if (addr) {
+          const line = [addr.addressLine?.[0], addr.city, addr.postalCode].filter(Boolean).join(', ');
+          if (line) next.address = line.slice(0, 500);
+        }
+        return next;
+      });
+    } catch {
+      // User cancelled or unsupported — ignore
+    }
+  }
+
   function validateStep() {
     if (step === 0) {
       if (!form.name.trim()) return 'Please enter your full name.';
@@ -118,7 +227,7 @@ export default function Intake() {
     }
     if (step === 3) {
       if (!form.consentAccepted) return 'Please accept the consent to continue.';
-      if (!form.consentSignedName.trim()) return 'Type your name as signature.';
+      if (!form.consentSignedName.trim()) return 'Confirm your name below.';
       if (sigEmpty) return 'Please sign in the box below.';
     }
     return null;
@@ -143,13 +252,32 @@ export default function Intake() {
     setErr(null);
     try {
       const signature = canvasRef.current?.toDataURL('image/png') || '';
+      const address = [form.area, form.address].filter(Boolean).join(', ');
+      const idCard = [form.idType, form.identificationCard].filter(Boolean).join(' ').trim();
       const res = await api.post(
         '/intake',
         {
-          ...form,
+          name: form.name.trim(),
+          gender: form.gender,
           age: form.age === '' ? undefined : Number(form.age),
+          occupation: form.occupation,
+          maritalStatus: form.maritalStatus,
+          address,
           phone: toE164(form.phone),
+          email: form.email.trim(),
+          identificationCard: idCard,
+          complaintPhysical: joinList(form.complaintPhysical),
+          complaintMental: joinList(form.complaintMental),
+          complaintSocial: joinList(form.complaintSocial),
+          complaintSexual: joinList(form.complaintSexual),
+          addictions: joinList(form.addictions),
+          dietaryHabits: form.dietaryHabits,
+          sleepHabits: form.sleepHabits,
+          pastHistory: [joinList(form.pastHistory), form.notes].filter(Boolean).join('. '),
+          investigationsDone: joinList(form.investigationsDone),
+          medicationsAtPresent: joinList(form.medicationsAtPresent),
           consentAccepted: true,
+          consentSignedName: form.consentSignedName.trim() || form.name.trim(),
           consentSignatureDataUrl: signature,
         },
         { auth: false }
@@ -169,12 +297,11 @@ export default function Intake() {
           <div className="ah-intake-success">
             <div className="ah-intake-success-mark">✓</div>
             <h1>You're registered</h1>
-            <p>Thank you, {done.name}. Our doctors will review your case sheet shortly.</p>
+            <p>Thank you, {done.name}. Show this number at the desk.</p>
             <div className="ah-intake-patient-no">
               <span>Patient no.</span>
               <strong>{done.patientNo}</strong>
             </div>
-            <p className="ah-intake-hint">Please show this number at the front desk.</p>
             <Link to="/" className="ah-intake-link">Back to Ahimsa</Link>
           </div>
         </div>
@@ -201,102 +328,143 @@ export default function Intake() {
           {step === 0 && (
             <section className="ah-intake-section">
               <h1>About you</h1>
-              <p className="ah-intake-lead">A few details so our doctors can prepare for your visit.</p>
-              <label className="ah-intake-label">Full name *
-                <input value={form.name} onChange={set('name')} autoComplete="name" placeholder="As on your ID" />
+              <p className="ah-intake-lead">Tap to select — type only what’s needed.</p>
+
+              {contactOk && (
+                <button type="button" className="ah-intake-autofill" onClick={pickFromPhone}>
+                  Use details from phone
+                </button>
+              )}
+
+              <label className="ah-intake-label">Mobile number *
+                <PhoneInput
+                  value={form.phone}
+                  onChange={(digits) => setVal('phone', digits)}
+                  autoComplete="tel-national"
+                  name="phone"
+                  autoFocus
+                />
               </label>
+
+              <label className="ah-intake-label">Full name *
+                <input
+                  value={form.name}
+                  onChange={set('name')}
+                  autoComplete="name"
+                  name="name"
+                  enterKeyHint="next"
+                  autoCapitalize="words"
+                  placeholder="As on your ID"
+                />
+              </label>
+
               <div className="ah-intake-row">
                 <label className="ah-intake-label">Age
-                  <input type="number" inputMode="numeric" min="0" max="120" value={form.age} onChange={set('age')} placeholder="Years" />
+                  <input
+                    type="text"
+                    inputMode="numeric"
+                    pattern="[0-9]*"
+                    autoComplete="bday-year"
+                    name="age"
+                    maxLength={3}
+                    value={form.age}
+                    onChange={(e) => setVal('age', e.target.value.replace(/\D/g, '').slice(0, 3))}
+                    placeholder="Yrs"
+                  />
                 </label>
-                <label className="ah-intake-label">Gender
-                  <select value={form.gender} onChange={set('gender')}>
-                    <option value="">Select</option>
-                    <option>Female</option>
-                    <option>Male</option>
-                    <option>Other</option>
-                    <option>Prefer not to say</option>
-                  </select>
-                </label>
-              </div>
-              <div className="ah-intake-row">
-                <label className="ah-intake-label">Occupation
-                  <input value={form.occupation} onChange={set('occupation')} />
-                </label>
-                <label className="ah-intake-label">Marital status
-                  <select value={form.maritalStatus} onChange={set('maritalStatus')}>
-                    <option value="">Select</option>
-                    <option>Single</option>
-                    <option>Married</option>
-                    <option>Widowed</option>
-                    <option>Divorced</option>
-                    <option>Other</option>
-                  </select>
+                <label className="ah-intake-label">Email
+                  <input
+                    type="email"
+                    inputMode="email"
+                    autoComplete="email"
+                    name="email"
+                    enterKeyHint="next"
+                    value={form.email}
+                    onChange={set('email')}
+                    placeholder="Optional"
+                  />
                 </label>
               </div>
-              <label className="ah-intake-label">Address
-                <textarea rows={2} value={form.address} onChange={set('address')} placeholder="Locality, city" />
+
+              <ChipGroup label="Gender" options={GENDERS} value={form.gender} onChange={(v) => setVal('gender', v)} />
+              <ChipGroup label="Marital status" options={MARITAL} value={form.maritalStatus} onChange={(v) => setVal('maritalStatus', v)} />
+              <ChipGroup label="Occupation" options={OCCUPATIONS} value={form.occupation} onChange={(v) => setVal('occupation', v)} />
+              <ChipGroup label="Area" options={AREAS} value={form.area} onChange={(v) => setVal('area', v)} hint="tap one" />
+
+              <label className="ah-intake-label">Landmark / flat (optional)
+                <input
+                  value={form.address}
+                  onChange={set('address')}
+                  autoComplete="street-address"
+                  name="street-address"
+                  enterKeyHint="done"
+                  autoCapitalize="sentences"
+                  placeholder="Building, street — skip if area is enough"
+                />
               </label>
-              <label className="ah-intake-label">Mobile number *
-                <PhoneInput value={form.phone} onChange={(digits) => setVal('phone', digits)} />
-              </label>
-              <label className="ah-intake-label">Email
-                <input type="email" value={form.email} onChange={set('email')} autoComplete="email" placeholder="optional" />
-              </label>
-              <label className="ah-intake-label">Identification card
-                <input value={form.identificationCard} onChange={set('identificationCard')} placeholder="Aadhaar / PAN / other (last 4 ok)" />
-              </label>
+
+              <ChipGroup
+                label="ID type"
+                options={['Aadhaar', 'PAN', 'Driving licence', 'Passport', 'Other']}
+                value={form.idType}
+                onChange={(v) => setVal('idType', v)}
+              />
+              {form.idType && (
+                <label className="ah-intake-label">{form.idType} last 4 digits (optional)
+                  <input
+                    type="text"
+                    inputMode="numeric"
+                    pattern="[0-9]*"
+                    name="id-last4"
+                    maxLength={4}
+                    autoComplete="off"
+                    value={form.identificationCard}
+                    onChange={(e) => setVal('identificationCard', e.target.value.replace(/\D/g, '').slice(0, 4))}
+                    placeholder="••••"
+                  />
+                </label>
+              )}
             </section>
           )}
 
           {step === 1 && (
             <section className="ah-intake-section">
-              <h1>Present complaints</h1>
-              <p className="ah-intake-lead">Tell us what brings you in — physical, mental, social or sexual.</p>
-              <label className="ah-intake-label">(1) Physical
-                <textarea rows={3} value={form.complaintPhysical} onChange={set('complaintPhysical')} placeholder="Pain, fatigue, digestion…" />
-              </label>
-              <label className="ah-intake-label">(2) Mental
-                <textarea rows={2} value={form.complaintMental} onChange={set('complaintMental')} placeholder="Stress, sleep, mood…" />
-              </label>
-              <label className="ah-intake-label">(3) Social
-                <textarea rows={2} value={form.complaintSocial} onChange={set('complaintSocial')} />
-              </label>
-              <label className="ah-intake-label">(4) Sexual
-                <textarea rows={2} value={form.complaintSexual} onChange={set('complaintSexual')} />
-              </label>
-              <label className="ah-intake-label">Addictions if any
-                <textarea rows={2} value={form.addictions} onChange={set('addictions')} placeholder="Tobacco, alcohol, caffeine…" />
-              </label>
-              <label className="ah-intake-label">Dietary habits
-                <textarea rows={2} value={form.dietaryHabits} onChange={set('dietaryHabits')} placeholder="Veg / non-veg, meal timing…" />
-              </label>
-              <label className="ah-intake-label">Sleep habits
-                <textarea rows={2} value={form.sleepHabits} onChange={set('sleepHabits')} placeholder="Hours, quality, issues…" />
-              </label>
+              <h1>How are you feeling?</h1>
+              <p className="ah-intake-lead">Tap all that apply — no typing needed.</p>
+              <ChipGroup label="Physical" options={PHYSICAL} value={form.complaintPhysical} onChange={(v) => setVal('complaintPhysical', v)} multi hint="multi" />
+              <ChipGroup label="Mental" options={MENTAL} value={form.complaintMental} onChange={(v) => setVal('complaintMental', v)} multi />
+              <ChipGroup label="Social" options={SOCIAL} value={form.complaintSocial} onChange={(v) => setVal('complaintSocial', v)} multi />
+              <ChipGroup label="Sexual" options={SEXUAL} value={form.complaintSexual} onChange={(v) => setVal('complaintSexual', v)} multi />
+              <ChipGroup label="Addictions" options={ADDICTIONS} value={form.addictions} onChange={(v) => setVal('addictions', v)} multi />
+              <ChipGroup label="Diet" options={DIETS} value={form.dietaryHabits} onChange={(v) => setVal('dietaryHabits', v)} />
+              <ChipGroup label="Sleep" options={SLEEP} value={form.sleepHabits} onChange={(v) => setVal('sleepHabits', v)} />
             </section>
           )}
 
           {step === 2 && (
             <section className="ah-intake-section">
               <h1>History</h1>
-              <p className="ah-intake-lead">Past illness, tests and medicines help us treat you safely.</p>
-              <label className="ah-intake-label">Past history
-                <textarea rows={3} value={form.pastHistory} onChange={set('pastHistory')} placeholder="Surgeries, chronic conditions…" />
-              </label>
-              <label className="ah-intake-label">Investigations done
-                <textarea rows={3} value={form.investigationsDone} onChange={set('investigationsDone')} placeholder="Blood reports, scans…" />
-              </label>
-              <label className="ah-intake-label">Medications at present
-                <textarea rows={3} value={form.medicationsAtPresent} onChange={set('medicationsAtPresent')} placeholder="Name, dose if known" />
+              <p className="ah-intake-lead">Helps doctors treat you safely. Tap None if not sure.</p>
+              <ChipGroup label="Past conditions" options={PAST} value={form.pastHistory} onChange={(v) => setVal('pastHistory', v)} multi />
+              <ChipGroup label="Investigations" options={INVEST} value={form.investigationsDone} onChange={(v) => setVal('investigationsDone', v)} multi />
+              <ChipGroup label="Medicines now" options={MEDS} value={form.medicationsAtPresent} onChange={(v) => setVal('medicationsAtPresent', v)} multi />
+              <label className="ah-intake-label">Anything else? (optional)
+                <textarea
+                  rows={2}
+                  value={form.notes}
+                  onChange={set('notes')}
+                  enterKeyHint="done"
+                  autoCapitalize="sentences"
+                  placeholder="Skip if chips cover it"
+                />
               </label>
             </section>
           )}
 
           {step === 3 && (
             <section className="ah-intake-section">
-              <h1>Consent & undertaking</h1>
-              <p className="ah-intake-lead">Please read carefully, then sign below.</p>
+              <h1>Consent</h1>
+              <p className="ah-intake-lead">Read, tick, and sign with your finger.</p>
               <div className="ah-intake-consent">
                 {CONSENT_PARAS.map((p) => <p key={p.slice(0, 24)}>{p}</p>)}
               </div>
@@ -308,15 +476,17 @@ export default function Intake() {
                 />
                 <span>I have read and agree to this consent and undertaking.</span>
               </label>
-              <label className="ah-intake-label">Type your full name *
+              <label className="ah-intake-label">Signing as
                 <input
                   value={form.consentSignedName}
                   onChange={set('consentSignedName')}
-                  placeholder={form.name || 'Signature name'}
+                  autoComplete="name"
+                  autoCapitalize="words"
+                  enterKeyHint="done"
                 />
               </label>
               <div className="ah-intake-sig-head">
-                <span>Signature *</span>
+                <span>Finger signature *</span>
                 <button type="button" className="ah-intake-clear" onClick={clearSig}>Clear</button>
               </div>
               <canvas
@@ -330,7 +500,6 @@ export default function Intake() {
                 onTouchMove={moveDraw}
                 onTouchEnd={endDraw}
               />
-              <p className="ah-intake-hint">Sign with your finger or stylus.</p>
             </section>
           )}
 
@@ -347,7 +516,7 @@ export default function Intake() {
             <button type="button" className="ah-intake-btn primary" onClick={next}>Continue</button>
           ) : (
             <button type="button" className="ah-intake-btn primary" onClick={submit} disabled={busy}>
-              {busy ? 'Submitting…' : 'Submit case sheet'}
+              {busy ? 'Submitting…' : 'Submit'}
             </button>
           )}
         </div>

@@ -5,7 +5,16 @@ import { toLocalDigits, formatLocalDisplay } from '../utils/phone.js';
  * Indian mobile input — fixed +91 prefix, user types 10 digits only.
  * `value` / `onChange` use local digits (or E.164 from API; displayed stripped).
  */
-export default function PhoneInput({ value, onChange, placeholder = '98765 43210', style, disabled }) {
+export default function PhoneInput({
+  value,
+  onChange,
+  placeholder = '98765 43210',
+  style,
+  disabled,
+  name = 'tel-national',
+  autoComplete = 'tel-national',
+  autoFocus = false,
+}) {
   const local = toLocalDigits(value);
 
   function handleChange(e) {
@@ -45,18 +54,24 @@ export default function PhoneInput({ value, onChange, placeholder = '98765 43210
       <input
         type="tel"
         inputMode="numeric"
-        autoComplete="tel-national"
+        pattern="[0-9]*"
+        autoComplete={autoComplete}
+        autoFocus={autoFocus}
+        name={name}
+        id={name}
+        enterKeyHint="next"
         disabled={disabled}
         value={formatLocalDisplay(local)}
         onChange={handleChange}
         placeholder={placeholder}
         maxLength={11}
+        aria-label="Mobile number"
         style={{
           flex: 1,
           border: 'none',
           outline: 'none',
           padding: '11px 12px',
-          fontSize: 14,
+          fontSize: 16,
           background: 'transparent',
           color: c.charcoal,
           minWidth: 0,
