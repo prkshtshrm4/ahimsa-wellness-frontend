@@ -282,7 +282,7 @@ export default function Intake() {
         },
         { auth: false }
       );
-      setDone(res.caseSheet);
+      setDone({ ...res.caseSheet, smsSent: Boolean(res.sms?.sent) });
     } catch (e) {
       setErr(e instanceof ApiError ? e.message : 'Could not submit. Please try again.');
       setBusy(false);
@@ -302,6 +302,9 @@ export default function Intake() {
               <span>Patient no.</span>
               <strong>{done.patientNo}</strong>
             </div>
+            {done.smsSent && (
+              <p className="ah-intake-hint">A confirmation SMS has been sent to your mobile.</p>
+            )}
             <Link to="/" className="ah-intake-link">Back to Ahimsa</Link>
           </div>
         </div>
