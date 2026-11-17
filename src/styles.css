@@ -1889,3 +1889,60 @@ a {
   border-color: #1b3c35;
   color: #fdfbf7;
 }
+
+/* Review page (QR) */
+.ah-review {
+  min-height: 100dvh;
+  background:
+    radial-gradient(100% 70% at 0% 0%, rgba(127,168,143,.22), transparent 50%),
+    linear-gradient(180deg, #f7f3ea, #fdfbf7 50%);
+}
+.ah-review-shell {
+  max-width: 440px;
+  margin: 0 auto;
+  padding: 24px 16px 48px;
+}
+.ah-review-card {
+  margin-top: 18px;
+  background: #fff;
+  border: 1px solid #ece6da;
+  border-radius: 18px;
+  padding: 22px 16px;
+}
+.ah-review-card h1 {
+  font-family: Newsreader, Georgia, serif;
+  font-weight: 500;
+  font-size: 26px;
+  margin: 0 0 6px;
+}
+.ah-review-lead { color: #5b615e; font-size: 14px; margin: 0 0 16px; }
+.ah-review-stars { display: flex; gap: 8px; justify-content: center; margin: 8px 0 20px; }
+.ah-review-star {
+  border: none; background: transparent; font-size: 36px; line-height: 1;
+  color: #d8d0c2; cursor: pointer; padding: 4px;
+}
+.ah-review-star.is-on { color: #b89355; }
+.ah-review-label {
+  display: block; font-size: 12px; font-weight: 600; color: #59615f; margin-bottom: 12px;
+}
+.ah-review-label input, .ah-review-label textarea {
+  display: block; width: 100%; margin-top: 6px; padding: 12px;
+  border: 1px solid #e2dbcc; border-radius: 10px; background: #fcfaf5;
+  font-size: 16px; box-sizing: border-box;
+}
+.ah-review-submit {
+  width: 100%; margin-top: 8px; min-height: 48px; border: none; border-radius: 12px;
+  background: #1b3c35; color: #fdfbf7; font-weight: 700; font-size: 15px; cursor: pointer;
+}
+.ah-review-submit:disabled { opacity: .55; }
+.ah-review-error {
+  margin-bottom: 10px; padding: 10px 12px; border-radius: 10px;
+  background: #fbefea; border: 1px solid #e8d3c9; color: #a8543a; font-size: 13px; font-weight: 600;
+}
+.ah-review-done { text-align: center; padding: 36px 20px; }
+.ah-review-mark {
+  width: 56px; height: 56px; margin: 0 auto 12px; border-radius: 50%;
+  background: #1b3c35; color: #fff; display: flex; align-items: center; justify-content: center;
+  font-size: 24px; font-weight: 700;
+}
+.ah-review-link { color: #1b3c35; font-weight: 600; }

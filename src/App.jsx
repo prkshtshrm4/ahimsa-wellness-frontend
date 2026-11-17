@@ -20,6 +20,7 @@ import LinkPhone from './pages/LinkPhone.jsx';
 import Intake from './pages/Intake.jsx';
 import AdminCases from './pages/AdminCases.jsx';
 import AdminIntakeQr from './pages/AdminIntakeQr.jsx';
+import Review from './pages/Review.jsx';
 
 function RequireAuth({ children }) {
   const { identity, loading } = useAuth();
@@ -41,8 +42,9 @@ function RequireStaff({ module, children }) {
 export default function App() {
   return (
     <Routes>
-      {/* Standalone QR intake — no site chrome */}
+      {/* Standalone QR flows — no site chrome */}
       <Route path="/intake" element={<Intake />} />
+      <Route path="/review" element={<Review />} />
 
       {/* Public */}
       <Route element={<PublicLayout />}>
