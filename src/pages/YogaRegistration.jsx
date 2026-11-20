@@ -6,9 +6,9 @@ import PhoneInput from '../components/PhoneInput.jsx';
 import { toE164, isValidIndianMobile } from '../utils/phone.js';
 
 const SLOTS = [
-  { id: '7-8am', label: '7–8 am' },
-  { id: '8-9am', label: '8–9 am' },
-  { id: '4-5pm', label: '4–5 pm' },
+  { id: '7-8am', label: '7–8 am', note: 'Morning' },
+  { id: '8-9am', label: '8–9 am', note: 'Morning' },
+  { id: '4-5pm', label: '4–5 pm', note: 'Evening' },
 ];
 
 const GENDERS = [
@@ -65,14 +65,16 @@ export default function YogaRegistration() {
 
   if (done) {
     return (
-      <div className="ah-review">
-        <div className="ah-review-shell">
-          <Logo size={48} showWord sub="YOGA" />
-          <div className="ah-review-card ah-review-done">
-            <div className="ah-review-mark">✓</div>
+      <div className="ah-yoga">
+        <div className="ah-yoga-shell">
+          <header className="ah-yoga-brand">
+            <Logo size={42} showWord sub="YOGA" />
+          </header>
+          <div className="ah-yoga-done">
+            <div className="ah-yoga-done-mark" aria-hidden="true">✓</div>
             <h1>You&apos;re registered</h1>
-            <p>We&apos;ll reach you on WhatsApp with class details.</p>
-            <Link to="/" className="ah-review-link">Back to Ahimsa</Link>
+            <p>We&apos;ll message you on WhatsApp with class details shortly.</p>
+            <Link to="/" className="ah-yoga-text-link">Back to Ahimsa</Link>
           </div>
         </div>
       </div>
@@ -80,82 +82,116 @@ export default function YogaRegistration() {
   }
 
   return (
-    <div className="ah-review">
-      <div className="ah-review-shell">
-        <Logo size={44} showWord sub="YOGA REGISTRATION" />
-        <div className="ah-review-card">
-          <h1>Join a yoga class</h1>
-          <p className="ah-review-lead">Fill this short form — pick one or more slots that work for you.</p>
+    <div className="ah-yoga">
+      <div className="ah-yoga-shell">
+        <header className="ah-yoga-brand">
+          <Logo size={40} showWord sub="AHIMSA WELLNESS" />
+        </header>
 
-          <label className="ah-review-label">
-            Name
-            <input
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              autoComplete="name"
-              autoCapitalize="words"
-              enterKeyHint="next"
-            />
-          </label>
-
-          <label className="ah-review-label">
-            WhatsApp number
-            <PhoneInput value={whatsapp} onChange={setWhatsapp} />
-          </label>
-
-          <label className="ah-review-label">
-            Email
-            <input
-              type="email"
-              inputMode="email"
-              autoComplete="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              enterKeyHint="next"
-            />
-          </label>
-
-          <div className="ah-review-label" style={{ marginBottom: 14 }}>
-            Preferred slot
-            <span className="ah-yoga-hint">Select one or more</span>
-            <div className="ah-yoga-chips" role="group" aria-label="Time slots">
-              {SLOTS.map((slot) => (
-                <button
-                  key={slot.id}
-                  type="button"
-                  className={`ah-yoga-chip${slots.includes(slot.id) ? ' is-on' : ''}`}
-                  onClick={() => toggleSlot(slot.id)}
-                  aria-pressed={slots.includes(slot.id)}
-                >
-                  {slot.label}
-                </button>
-              ))}
-            </div>
+        <main className="ah-yoga-main">
+          <div className="ah-yoga-intro">
+            <p className="ah-yoga-kicker">Yoga at the centre</p>
+            <h1>Registration for Yoga Class <span>(free for limited time)</span></h1>
+            <p className="ah-yoga-lead">
+              Tell us a little about yourself and the slots that suit you. Takes under a minute.
+            </p>
           </div>
 
-          <div className="ah-review-label" style={{ marginBottom: 14 }}>
-            Gender
-            <div className="ah-yoga-chips" role="radiogroup" aria-label="Gender">
-              {GENDERS.map((g) => (
-                <button
-                  key={g.id}
-                  type="button"
-                  className={`ah-yoga-chip${gender === g.id ? ' is-on' : ''}`}
-                  onClick={() => setGender(g.id)}
-                  aria-pressed={gender === g.id}
-                >
-                  {g.label}
-                </button>
-              ))}
+          <form
+            className="ah-yoga-form"
+            onSubmit={(e) => {
+              e.preventDefault();
+              submit();
+            }}
+          >
+            <label className="ah-yoga-field">
+              Name
+              <input
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                autoComplete="name"
+                autoCapitalize="words"
+                enterKeyHint="next"
+                required
+              />
+            </label>
+
+            <label className="ah-yoga-field">
+              WhatsApp number
+              <PhoneInput
+                value={whatsapp}
+                onChange={setWhatsapp}
+                style={{ borderRadius: 12, marginTop: 8, minHeight: 48 }}
+              />
+            </label>
+
+            <label className="ah-yoga-field">
+              Email
+              <input
+                type="email"
+                inputMode="email"
+                autoComplete="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                enterKeyHint="next"
+                required
+              />
+            </label>
+
+            <fieldset className="ah-yoga-fieldset">
+              <legend>
+                Preferred slot
+                <span>Choose one or more</span>
+              </legend>
+              <div className="ah-yoga-slots" role="group" aria-label="Time slots">
+                {SLOTS.map((slot) => {
+                  const on = slots.includes(slot.id);
+                  return (
+                    <button
+                      key={slot.id}
+                      type="button"
+                      className={`ah-yoga-slot${on ? ' is-on' : ''}`}
+                      onClick={() => toggleSlot(slot.id)}
+                      aria-pressed={on}
+                    >
+                      <span className="ah-yoga-slot-check" aria-hidden="true">{on ? '✓' : ''}</span>
+                      <span className="ah-yoga-slot-text">
+                        <strong>{slot.label}</strong>
+                        <em>{slot.note}</em>
+                      </span>
+                    </button>
+                  );
+                })}
+              </div>
+            </fieldset>
+
+            <fieldset className="ah-yoga-fieldset">
+              <legend>Gender</legend>
+              <div className="ah-yoga-genders" role="radiogroup" aria-label="Gender">
+                {GENDERS.map((g) => (
+                  <button
+                    key={g.id}
+                    type="button"
+                    className={`ah-yoga-gender${gender === g.id ? ' is-on' : ''}`}
+                    onClick={() => setGender(g.id)}
+                    aria-pressed={gender === g.id}
+                  >
+                    {g.label}
+                  </button>
+                ))}
+              </div>
+            </fieldset>
+
+            {err && <div className="ah-yoga-error" role="alert">{err}</div>}
+
+            <div className="ah-yoga-actions">
+              <button type="submit" className="ah-yoga-submit" disabled={busy}>
+                {busy ? 'Submitting…' : 'Submit registration'}
+              </button>
+              <p className="ah-yoga-foot">We&apos;ll confirm on WhatsApp. No payment needed for this offer.</p>
             </div>
-          </div>
-
-          {err && <div className="ah-review-error">{err}</div>}
-
-          <button type="button" className="ah-review-submit" onClick={submit} disabled={busy}>
-            {busy ? 'Submitting…' : 'Register'}
-          </button>
-        </div>
+          </form>
+        </main>
       </div>
     </div>
   );
