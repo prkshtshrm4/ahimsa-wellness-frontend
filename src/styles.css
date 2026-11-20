@@ -1946,3 +1946,39 @@ a {
   font-size: 24px; font-weight: 700;
 }
 .ah-review-link { color: #1b3c35; font-weight: 600; }
+
+.ah-yoga-hint {
+  display: block;
+  margin-top: 4px;
+  font-size: 11px;
+  font-weight: 500;
+  color: #9aa29c;
+  letter-spacing: 0;
+  text-transform: none;
+}
+.ah-yoga-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 8px;
+}
+.ah-yoga-chip {
+  border: 1.5px solid #e2dbcc;
+  background: #fcfaf5;
+  color: #1a1f2b;
+  border-radius: 999px;
+  padding: 10px 14px;
+  font-weight: 600;
+  font-size: 13px;
+  cursor: pointer;
+  min-height: 40px;
+}
+.ah-yoga-chip.is-on {
+  background: #1b3c35;
+  border-color: #1b3c35;
+  color: #fdfbf7;
+}
+
+@media (max-width: 420px) {
+  .ah-yoga-chip { flex: 1 1 calc(50% - 8px); text-align: center; }
+}

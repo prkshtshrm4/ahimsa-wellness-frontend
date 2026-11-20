@@ -21,6 +21,8 @@ import Intake from './pages/Intake.jsx';
 import AdminCases from './pages/AdminCases.jsx';
 import AdminIntakeQr from './pages/AdminIntakeQr.jsx';
 import Review from './pages/Review.jsx';
+import YogaRegistration from './pages/YogaRegistration.jsx';
+import AdminYogaRegistrations from './pages/AdminYogaRegistrations.jsx';
 
 function RequireAuth({ children }) {
   const { identity, loading } = useAuth();
@@ -45,6 +47,7 @@ export default function App() {
       {/* Standalone QR flows — no site chrome */}
       <Route path="/intake" element={<Intake />} />
       <Route path="/review" element={<Review />} />
+      <Route path="/yogaregistration" element={<YogaRegistration />} />
 
       {/* Public */}
       <Route element={<PublicLayout />}>
@@ -80,6 +83,7 @@ export default function App() {
         <Route path="/admin/cases" element={<RequireStaff module="cases.manage"><AdminCases /></RequireStaff>} />
         <Route path="/admin/cases/:id" element={<RequireStaff module="cases.manage"><AdminCases /></RequireStaff>} />
         <Route path="/admin/intake-qr" element={<RequireStaff module="cases.manage"><AdminIntakeQr /></RequireStaff>} />
+        <Route path="/admin/yoga-registrations" element={<RequireStaff module="cases.manage"><AdminYogaRegistrations /></RequireStaff>} />
         <Route path="/admin/schedule" element={<RequireStaff module="schedule.own"><TherapistSchedule /></RequireStaff>} />
       </Route>
 

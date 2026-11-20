@@ -16,6 +16,7 @@ const HEADERS = [
   { match: /^\/admin\/staff/, title: 'Staff & permissions', subtitle: 'Admin' },
   { match: /^\/admin\/cases/, title: 'Case sheets', subtitle: 'Doctors · intake' },
   { match: /^\/admin\/intake-qr/, title: 'Intake QR', subtitle: 'Drive desk' },
+  { match: /^\/admin\/yoga-registrations/, title: 'Yoga registrations', subtitle: 'Classes' },
   { match: /^\/admin\/schedule/, title: 'My schedule today', subtitle: 'Therapist' },
 ];
 function headerFor(pathname) {
@@ -134,6 +135,7 @@ export function AppLayout() {
               {can('bookings.create') && <NavItem to="/admin/new" icon="＋" label="New walk-in" />}
               {can('cases.manage') && <NavItem to="/admin/cases" icon="☰" label="Case sheets" />}
               {can('cases.manage') && <NavItem to="/admin/intake-qr" icon="▦" label="Intake QR" />}
+              {can('cases.manage') && <NavItem to="/admin/yoga-registrations" icon="◯" label="Yoga registrations" />}
               {can('services.manage') && <NavItem to="/admin/packages" icon="◇" label="Packages" />}
               {can('services.manage') && <NavItem to="/admin/services" icon="≡" label="Services & pricing" />}
               {can('staff.manage') && <NavItem to="/admin/staff" icon="◎" label="Staff & permissions" />}
