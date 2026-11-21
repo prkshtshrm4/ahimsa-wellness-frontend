@@ -99,6 +99,7 @@ export default function YogaRegistration() {
 
           <form
             className="ah-yoga-form"
+            noValidate
             onSubmit={(e) => {
               e.preventDefault();
               submit();
@@ -112,7 +113,6 @@ export default function YogaRegistration() {
                 autoComplete="name"
                 autoCapitalize="words"
                 enterKeyHint="next"
-                required
               />
             </label>
 
@@ -128,13 +128,16 @@ export default function YogaRegistration() {
             <label className="ah-yoga-field">
               Email
               <input
-                type="email"
+                type="text"
                 inputMode="email"
                 autoComplete="email"
+                autoCapitalize="none"
+                autoCorrect="off"
+                spellCheck={false}
                 value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                onChange={(e) => setEmail(e.target.value.trim())}
                 enterKeyHint="next"
-                required
+                placeholder="you@email.com"
               />
             </label>
 
